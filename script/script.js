@@ -7,7 +7,7 @@ Cesium.Camera.DEFAULT_VIEW_RECTANGLE = extent;
 // Cesium.Camera.DEFAULT_VIEW_FACTOR = 0;
 
 const viewer = new Cesium.Viewer('cesiumContainer', {
-	// imageryProvider: new Cesium.IonImageryProvider({ assetId: 3954 }),//asset added to account
+	imageryProvider: new Cesium.IonImageryProvider({ assetId: 3954 }),//asset added to account
 	// terrainProvider: Cesium.createWorldTerrain(),
 	timeline: false,
 	animation: false,
@@ -39,22 +39,6 @@ viewer.dataSources.add(postcodes);
 viewer.dataSources.add(lgas);
 viewer.dataSources.add(agg);
 
-// viewer.dataSources.add(Cesium.GeoJsonDataSource.load("../geo/NSW.json"));
-// viewer.dataSources.add(Cesium.GeoJsonDataSource.load("../geo/VIC.json"));
-
-// viewer.dataSources.add(Cesium.GeoJsonDataSource.load("../geo/QLD.json"));
-
-// viewer.dataSources.add(Cesium.GeoJsonDataSource.load("../amalg/qld_01.json"));
-// viewer.dataSources.add(Cesium.GeoJsonDataSource.load("../amalg/qld/cairns.json"));
-// viewer.dataSources.add(Cesium.GeoJsonDataSource.load("script/amalg/QLD_01.json"));
-
-// viewer.dataSources.add(Cesium.GeoJsonDataSource.load("../geo/TAS.json"));
-// viewer.dataSources.add(Cesium.GeoJsonDataSource.load("../geo/SA.json"));
-// viewer.dataSources.add(Cesium.GeoJsonDataSource.load("../geo/WA.json"));
-// viewer.dataSources.add(Cesium.GeoJsonDataSource.load("../geo/NT.json"));
-
-// viewer.dataSources.add(Cesium.GeoJsonDataSource.load("../geo/TAS.json"));
-
 const toTitleCase = (str)=>{
 	return str.replace(
 		/\w\S*/g,
@@ -65,7 +49,7 @@ const toTitleCase = (str)=>{
 }
 
 const loadPostcodes = (state)=>{
-	let info = fetch(`script/${state}.json`,{
+	let info = fetch(`script/postcodes/${state}.json`,{
 		method: 'get',
 		headers: {'Content-Type': 'application/json'}
 	})
@@ -106,7 +90,7 @@ const appendPostcodes = (o)=>{
 };
 
 const loadLGAs = (state)=>{
-	let info = fetch(`../geo/${state}.json`,{
+	let info = fetch(`script/lgas/${state}.json`,{
 		method: 'get',
 		headers: {'Content-Type': 'application/json'}
 	})
@@ -153,15 +137,15 @@ const appendLGAs = (o)=>{
 }
 
 const loadAgg = (state)=>{
-	let info = fetch(`script/amalg/${state}.json`,{
-		method: 'get',
-		headers: {'Content-Type': 'application/json'}
-	})
-	.then((response) => response.json())
-	.then((response) => {
-		appendAgg(response['features'])
-	})
-	.catch(err => console.error('Caught error: ', err))
+	// let info = fetch(`script/aggregated/${state}.json`,{
+	// 	method: 'get',
+	// 	headers: {'Content-Type': 'application/json'}
+	// })
+	// .then((response) => response.json())
+	// .then((response) => {
+	// 	appendAgg(response['features'])
+	// })
+	// .catch(err => console.error('Caught error: ', err))
 }
 
 const appendAgg = (o)=>{
@@ -204,7 +188,7 @@ const load = ()=>{
 	loadLGAs('NSW')	
 	loadAgg('NSW')
 }
-setTimeout(load,2000)
+setTimeout(load,500)
 
 
 /*
