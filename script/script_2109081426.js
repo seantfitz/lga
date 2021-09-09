@@ -1,14 +1,14 @@
-Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxY2JiMDhjMS1jODcyLTQxYWQtYmJiOC1hNTUyNDE0Zjg2N2YiLCJpZCI6NjQ3MDIsImlhdCI6MTYyOTQyMjY0OX0.XrBfYMVmvrlNeNuAdbcCyVHJ44KMq_yCGptHtZ1F9VY';
-// const extent = Cesium.Rectangle.fromDegrees(80,-30,180,-20);//(W,S,E,N)
-const extent = Cesium.Rectangle.fromDegrees(90,-30,180,-20);//(W,S,E,N)
-// const extent = Cesium.Rectangle.fromDegrees(137,-30,155,-9);
+// const extent = Cesium.Rectangle.fromDegrees(117.940573,-29.808406,118.313421,-29.468825);
+// const extent = Cesium.Rectangle.fromDegrees(W,S,E,N);
+// const extent = Cesium.Rectangle.fromDegrees(100,-45,160,-10);
+const extent = Cesium.Rectangle.fromDegrees(80,-30,180,-20);
 
 Cesium.Camera.DEFAULT_VIEW_RECTANGLE = extent;
 // Cesium.Camera.DEFAULT_VIEW_FACTOR = 0;
 
 const viewer = new Cesium.Viewer('cesiumContainer', {
-	imageryProvider: new Cesium.IonImageryProvider({ assetId: 3954 }),//asset added to account
-	// imageryProvider: false,
+	// imageryProvider: new Cesium.IonImageryProvider({ assetId: 3954 }),//asset added to account
+	imageryProvider: false,
 	// terrainProvider: Cesium.createWorldTerrain(),
 	timeline: false,
 	animation: false,
@@ -26,28 +26,25 @@ const viewer = new Cesium.Viewer('cesiumContainer', {
 
 	// rectangle: (113.338953078, -43.6345972634, 153.569469029, -10.6681857235),
 
-	// selectionIndicator : false,
+	selectionIndicator : false,
 	// infoBox : false,
 
-	// sceneMode: Cesium.SceneMode.SCENE2D,
+	sceneMode: Cesium.SceneMode.SCENE2D,
 	// mapMode2D: Cesium.MapMode2D.ROTATE,
 });
 
 let electorates = new Cesium.CustomDataSource("electorates")
 let lgas = new Cesium.CustomDataSource("lgas")
-let aggregated = new Cesium.CustomDataSource("aggregated")
+let agg = new Cesium.CustomDataSource("agg")
 let sites = new Cesium.CustomDataSource("sites")
 
 viewer.dataSources.add(electorates);
 viewer.dataSources.add(lgas);
-viewer.dataSources.add(aggregated);
+viewer.dataSources.add(agg);
 viewer.dataSources.add(sites);
 
 electorates.show = false;
 lgas.show = false;
-aggregated.show = true;
-
-const colours = [[255,0,0],[255,106,0],[255,213,0],[191,255,0],[84,255,0],[0,255,22],[0,255,128],[0,255,234],[0,169,255],[0,63,255],[42,0,255],[148,0,255],[254,0,253],[255,0,147],[255,0,41],[255,64,0],[255,170,0],[233,255,0],[127,255,0],[21,255,0],[0,255,86],[0,255,192],[0,211,255],[0,105,255],[0,0,255],[106,0,255],[212,0,255],[255,0,190],[255,0,83],[255,21,0],[255,128,0],[255,234,0],[169,255,0],[63,255,0],[0,255,43],[0,255,149],[0,254,255],[0,148,255],[0,41,255],[63,0,255],[169,0,255],[255,0,232],[255,0,126],[255,0,20],[255,85,0],[255,191,0],[212,255,0],[106,255,0],[1,255,1],[0,255,107],[0,255,213],[0,190,255],[0,84,255],[21,0,255],[127,0,255],[233,0,255],[255,0,168],[255,0,62],[255,43,0],[255,149,0]]
 
 const toTitleCase = (str)=>{
 	return str.replace(
@@ -70,7 +67,7 @@ const decimalise = (val,dec)=>{
 
 /****************************************************************************/
 
-const loadSites = (state)=>{
+const loadSites = (state)=>{console.log('loadSites')
 	let propName = `sites_${state}`
 	if(typeof(window[propName]) !== 'object'){
 		let info = fetch(`script/sites/${state}.json`,{
@@ -95,21 +92,18 @@ const loadSites = (state)=>{
 };
 
 const appendSites = (o,state)=>{
-	// console.log(o.length)
 	for(let i in o){
-		let description = `Population: ${numberWithCommas(o[i]['population'])}`
+		let description = `Population: ${o[i]['population']}`
 
 		sites.entities.add({
 			name: o[i]['locality'],
 			description: description,
-			position: Cesium.Cartesian3.fromDegrees(o[i]['long'], o[i]['lat'],500),
+			position: Cesium.Cartesian3.fromDegrees(o[i]['long'], o[i]['lat']),
 			point: {
 				pixelSize : 5,
 				color : Cesium.Color.RED,
 				outlineColor : Cesium.Color.WHITE,
 				outlineWidth : 2,
-				translucencyByDistance: new Cesium.NearFarScalar(100000, 1, 5000000, 0),
-				depthTestAgainstTerrain: false,
 			},
 			label: {
 				text: o[i]['locality'],
@@ -118,15 +112,14 @@ const appendSites = (o,state)=>{
 				verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
 				pixelOffset : new Cesium.Cartesian2(0, -9),
 				scaleByDistance: new Cesium.NearFarScalar(50000, 1, 5000000, 0),
-				translucencyByDistance: new Cesium.NearFarScalar(100000, 1, 5000000, 0),
-				depthTestAgainstTerrain: false,
+				// scaleByDistance: new Cesium.NearFarScalar(50000, 1, 2500000, 0),
 			}
 		})
 	}
 	// viewer.zoomTo(viewer.entities);
 };
 
-const loadLGAs = (state)=>{
+const loadLGAs = (state)=>{console.log('loadLGAs')
 	let propName = `lgas_${state}`
 	if(typeof(window[propName]) !== 'object'){
 		let info = fetch(`script/lgas/${state}.json`,{
@@ -149,11 +142,9 @@ const loadLGAs = (state)=>{
 		appendLGAs(window[propName],state)
 	}
 }
-// let repNames = {}
+
 const appendLGAs = (o,state)=>{
 
-	let thisCol = 0;
-	// console.log(o.length)
 	for(let i in o){
 
 		let LGA_NAME
@@ -166,79 +157,41 @@ const appendLGAs = (o,state)=>{
 			LGA_NAME = o[i]['properties']['LGA_NAME']
 		}
 
-		/**/
-		// if(!repNames[LGA_NAME]){
-		// 	repNames[LGA_NAME] = 1
-		// }else{
-		// 	repNames[LGA_NAME] ++
-		// }
-		/**/
-
 		let coords = o[i]['geometry']['coordinates'][0]
 		let boundary = []
-		
-		let r = colours[thisCol][0] / 255
-		let g = colours[thisCol][1] / 255
-		let b = colours[thisCol][2] / 255
-		let colour = new Cesium.Color(r,g,b,0.25)
-
-		thisCol++;
-		if(thisCol >= colours.length - 1){
-			thisCol = 0;
-		}
-
-		let W = 180;//lower lon
-		let E = -180;//higher lon
-		let S = 90;//lower lat
-		let N = -90;//higher lat
 
 		for(let i in coords){
 			boundary.push(coords[i][0],coords[i][1])
-
-			if(coords[i][0] < W){W = coords[i][0]}
-			if(coords[i][0] > E){E = coords[i][0]}
-			if(coords[i][1] < S){S = coords[i][1]}
-			if(coords[i][1] > N){N = coords[i][1]}
 		}
-
-		let midLat = (S + N) / 2
-		let midLon = (W + E) / 2
 
 		lgas.entities.add({
 			name: LGA_NAME,
 			polygon: {
 				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
 				height : 0,
-				material : colour,
+				material : Cesium.Color.WHITE.withAlpha(0.25),
 				outline : true,
 				outlineColor : Cesium.Color.BLACK,
 			},
-			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 1000),
 			label: {
-				// text: LGA_NAME.replace(/ /g,'\n'),
-				text: toTitleCase(LGA_NAME).replace(/ /g,'\n'),
+				text: LGA_NAME,
 				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
 				outlineWidth : 2,
-				fillColor: Cesium.Color.SKYBLUE,
-				scaleByDistance: new Cesium.NearFarScalar(50000, 1.5, 5000000, 0),
-				translucencyByDistance: new Cesium.NearFarScalar(50000, 0, 100000, 1),
-				depthTestAgainstTerrain: false,
+				// verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
+				// pixelOffset : new Cesium.Cartesian2(0, -9),
+				// scaleByDistance: new Cesium.NearFarScalar(50000, 1, 5000000, 0),
 			}
 		})
 	}
+	// viewer.zoomTo(viewer.dataSources.lgas)// viewer.camera.flyTo(viewer.dataSources.lgas)
+	// console.log(lgas.entities)
 	loadSites(state)
-	// console.log(JSON.stringify(repNames))
-	// let k = Object.keys(repNames)
-	// for(let i in k){
-	// 	if(repNames[k[i]] > 1){
-	// 		console.log(k[i],repNames[k[i]])
-	// 	}
-	// }
 }
 
-const loadAggregated = (state)=>{
+const loadAgg = (state)=>{console.log('loadAgg')
 	let propName = `aggregated_${state}`
 	if(typeof(window[propName]) !== 'object'){
+		console.log('NO')
 		let info = fetch(`script/aggregated/${state}.json`,{
 			method: 'get',
 			headers: {'Content-Type': 'application/json'}
@@ -252,16 +205,17 @@ const loadAggregated = (state)=>{
 			})
 		})
 		.then(() => {
-			appendAggregated(window[propName],state)
+			appendAgg(window[propName],state)
 		})
 		.catch(err => console.error('Caught error: ', err))
 	}else{
-		appendAggregated(window[propName],state)
+		console.log('YES')
+		appendAgg(window[propName],state)
 	}
 }
 
-const appendAggregated = (o,state)=>{
-	// console.log(o.length)
+const appendAgg = (o,state)=>{
+
 	for(let i in o){
 
 		let groupName = o[i]['properties']['id']
@@ -271,42 +225,19 @@ const appendAggregated = (o,state)=>{
 
 		let coords = o[i]['geometry']['coordinates'][0]
 		let boundary = []
-		//WSEN
-		let W = 180;//lower lon
-		let E = -180;//higher lon
-		let S = 90;//lower lat
-		let N = -90;//higher lat
 
 		for(let i in coords){
 			boundary.push(coords[i][0],coords[i][1])
-
-			if(coords[i][0] < W){W = coords[i][0]}
-			if(coords[i][0] > E){E = coords[i][0]}
-			if(coords[i][1] < S){S = coords[i][1]}
-			if(coords[i][1] > N){N = coords[i][1]}
 		}
 
-		let midLat = (S + N) / 2
-		let midLon = (W + E) / 2
-
-		aggregated.entities.add({
+		agg.entities.add({
 			name: groupName,
 			polygon: {
 				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
 				height : 0,
-				material : Cesium.Color[colour].withAlpha(0.25),
+				material : Cesium.Color[colour].withAlpha(0.5),
 				outline : true,
 				outlineColor : Cesium.Color.BLACK,
-			},
-			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 250000),
-			label: {
-				text: groupName.replace(' - ',`\n`),
-				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-				outlineWidth : 2,
-				fillColor: Cesium.Color.SKYBLUE,
-				scaleByDistance: new Cesium.NearFarScalar(50000, 2, 5000000, 0.5),
-				translucencyByDistance: new Cesium.NearFarScalar(10000, 0, 5000000, 1),
-				depthTestAgainstTerrain: false,
 			}
 		})
 	}
@@ -315,9 +246,10 @@ const appendAggregated = (o,state)=>{
 
 /******************************/
 
-const loadElectorates = (state)=>{
+const loadElectorates = (state)=>{console.log('loadElectorates')
 	let propName = `electorates_${state}`
 	if(typeof(window[propName]) !== 'object'){
+		console.log(`${propName} does not exist yet`)
 		let info = fetch(`script/electorates/${state}.json`,{
 			method: 'get',
 			headers: {'Content-Type': 'application/json'}
@@ -335,14 +267,13 @@ const loadElectorates = (state)=>{
 		})
 		.catch(err => console.error('Caught error: ', err))
 	}else{
+		console.log(`${propName} was prepared earlier`)
 		appendElectorates(window[propName],state)
 	}
 }
 
 const appendElectorates = (o,state)=>{
-
-	let thisCol = 0;
-	// console.log(o.length)
+console.log(o.length)
 	for(let i in o){
 
 		let E_div_numb = o[i]['properties']['E_div_numb']
@@ -354,36 +285,20 @@ const appendElectorates = (o,state)=>{
 		let Australian = o[i]['properties']['Australian']
 		let Area_SqKm = o[i]['properties']['Area_SqKm']
 		let Sortname = o[i]['properties']['Sortname']
+
+
+		let colour = 'PINK'// o[i]['properties']['colour']
+
 		let coords = o[i]['geometry']['coordinates'][0]
-		let description = `Area:&nbsp;${decimalise(Area_SqKm,2)}&nbsp;km<sup>2</sup>`
 		let boundary = []
 
-		let r = colours[thisCol][0] / 255
-		let g = colours[thisCol][1] / 255
-		let b = colours[thisCol][2] / 255
-		let colour = new Cesium.Color(r,g,b,0.25)
-
-		let W = 180;//lower lon
-		let E = -180;//higher lon
-		let S = 90;//lower lat
-		let N = -90;//higher lat
-
-		thisCol++;
-		if(thisCol >= colours.length - 1){
-			thisCol = 0;
-		}
+		let description = `
+			Area:&nbsp;${decimalise(Area_SqKm,2)}&nbsp;km<sup>2</sup>
+		`
 
 		for(let i in coords){
 			boundary.push(coords[i][0],coords[i][1])
-
-			if(coords[i][0] < W){W = coords[i][0]}
-			if(coords[i][0] > E){E = coords[i][0]}
-			if(coords[i][1] < S){S = coords[i][1]}
-			if(coords[i][1] > N){N = coords[i][1]}
 		}
-
-		let midLat = (S + N) / 2
-		let midLon = (W + E) / 2
 
 		electorates.entities.add({
 			name: `Electorate of ${Elect_div}`,
@@ -391,55 +306,155 @@ const appendElectorates = (o,state)=>{
 			polygon: {
 				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
 				height: 0,
-				material : colour,
+				material : Cesium.Color[colour].withAlpha(0.5),
 				outline : true,
 				outlineColor : Cesium.Color.BLACK,
-			},
-			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 5000),
-			label: {
-				// text: Elect_div.toUpperCase(),
-				text: Elect_div,
-				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-				outlineWidth : 2,
-				fillColor: Cesium.Color.SKYBLUE,
-				// scaleByDistance: new Cesium.NearFarScalar(50000, 1.5, 5000000, 0),
-				scaleByDistance: new Cesium.NearFarScalar(50000, 1.25, 5000000, 0.5),
-				// translucencyByDistance: new Cesium.NearFarScalar(500, 0.25, 5000000, 1),
-
-				// scaleByDistance: new Cesium.NearFarScalar(50000, 1.5, 5000000, 0),
-				translucencyByDistance: new Cesium.NearFarScalar(50000, 0, 100000, 1),
-
-				depthTestAgainstTerrain: false,
 			}
 		})
 	}
-	loadAggregated(state)
+	// loadAgg('QLD')
+	loadAgg(state)
 }
 
+
+const load = ()=>{console.log('load')
+	// loadPostcodes('NSW')
+	// loadSites('QLD')
+	// loadLGAs('QLD')
+	// loadAgg('QLD')
+	loadElectorates('QLD')
+}
+setTimeout(load,500)
+
+
+/*
+REGIONAL TOP 1-13
+Gold Coast
+Sunshine Coast
+Newcastle
+Wollongong
+Geelong
+Ipswich
+Townsville
+Cairns
+Toowoomba
+Ballarat
+Bendigo
+Albury-Wodonga
+Launceston
+
+REGIONAL 14-23
+Mackay
+Rockhampton
+Bunbury
+Coffs Harbour
+Bundaberg
+Wagga Wagga
+Hervey Bay
+Mildura-Wentworth
+Shepparton-Mooroopna
+Tweed Heads
+
+REGIONAL 24-33
+Port Macquarie
+Gladstone
+Tamworth
+Traralgon-Morwell
+Orange
+Bowral-Mittagong
+Busselton
+Dubbo
+Warragul-Drouin
+Geraldton
+
+REGIONAL 34-43
+Nowra-Bomaderry
+Bathurst
+Warrnambool
+Albany
+Devonport
+Kalgoorlie-Boulder
+Mount Gambier
+Lismore
+Nelson Bay
+Maryborough
+
+REGIONAL 44-53
+Burnie-Wynyard
+Alice Springs
+Victor Harbor-Goolwa
+Ballina
+Taree
+Morrisset-Cooranbong
+Armidale
+Goulburn
+Whyalla
+Gympie
+*/
+
 const viewSelect = (e)=>{
+
+	// viewer.entities.removeAll();
+	// postcodes.entities.removeAll();
 	sites.entities.removeAll();
 	lgas.entities.removeAll();
-	aggregated.entities.removeAll();
+	agg.entities.removeAll();
 	electorates.entities.removeAll();
-	loadElectorates(e.target.value);
+	
+	let x = e.target
+	console.log(x.value)
+	// $('.viewControl').removeClass('off')
+
+	// loadPostcodes(x.value);
+	// loadSites(x.value);
+	loadElectorates(x.value);
+	// if(x.value != 'ACT'){
+	// 	loadLGAs(x.value);
+	// 	loadAgg(x.value);
+	// }
 }
 
 const viewControl = (e)=>{
-	let x = $(e.target)	
-	sites.show = !sites.show;
-	if(x.hasClass('layerOff')){
-		x.removeClass('layerOff')
-	}else{
-		x.addClass('layerOff')
+
+	let x = $(e.target)
+	
+	switch(e.target.id){
+		case 'sites':
+
+		sites.show = !sites.show;
+
+		if(x.hasClass('layerOff')){
+			x.removeClass('layerOff')
+		}else{
+			x.addClass('layerOff')
+		}
+
+		break;
+		
+		case 'lgas':
+		case 'agg':
+		case 'electorates':
+		
+		electorates.show = !electorates.show;
+		lgas.show = !lgas.show;
+		agg.show = !agg.show;
+
+		if(x.hasClass('layerOff')){
+			$('.boundaries').addClass('layerOff')
+			x.removeClass('layerOff')
+		}else{
+			$('.boundaries').removeClass('layerOff')
+			x.addClass('layerOff')
+		}
+		
+		break;
 	}
 }
 
-const boundarySelect = (e)=>{
-	switch(e.target.value){
-		case 'aggregated': aggregated.show = true; lgas.show = false; electorates.show = false; break;
-		case 'lgas': aggregated.show = false; lgas.show = true; electorates.show = false; break;
-		case 'electorates': aggregated.show = false; lgas.show = false; electorates.show = true; break;
-	}
+const viewRadio = (e)=>{
+	// let x = $(e.target).parent().attr('for');
+	// console.log($(`#${x}`))
+	console.log($('input[name="boundaries"]:checked').val())
 }
 
 $('.cesium-viewer-toolbar').append(`
@@ -454,20 +469,32 @@ $('.cesium-viewer-toolbar').append(`
 		<option value="ACT">ACT</option>
 	</select>
 
-	<select class="cesium-button boundarySelect">
-		<option value="aggregated">Aggregated Regions</option>
+
+	<select class="cesium-button boundarySelect" name="state" id="state">
+		<option value="agg">Aggregated Regions</option>
 		<option value="lgas">LGAs</option>
 		<option value="electorates">Federal Electorates</option>
 	</select>
 
 	<button class="cesium-button viewControl sites layerOn" id="sites">Sites&nbsp;<span class="on">ON</span>&nbsp;<span class="off">OFF</span></button>
+
+	<!--<input type="radio" name="boundaries" id="radio_agg" value="agg" checked="checked">
+	<label for="radio_agg" class="cesium-button">Aggregated Regions:&nbsp;<span class="on">ON</span>&nbsp;<span class="off">OFF</span></label>
+	
+	<input type="radio" name="boundaries" id="radio_lgas" value="lgas">
+	<label for="radio_lgas" class="cesium-button layerOff">LGAs:&nbsp;<span class="on">ON</span>&nbsp;<span class="off">OFF</span></label>
+	
+	<input type="radio" name="boundaries" id="radio_electorates" value="electorates">
+	<label for="radio_electorates" class="cesium-button layerOff">Federal Electorates:&nbsp;<span class="on">ON</span>&nbsp;<span class="off">OFF</span></label>
+
+	<!--<button class="cesium-button viewControl sites layerOn" id="sites">Sites&nbsp;<span class="on">ON</span>&nbsp;<span class="off">OFF</span></button>
+	<button class="cesium-button viewControl boundaries layerOn" id="agg">Aggregated Regions&nbsp;<span class="on">ON</span>&nbsp;<span class="off">OFF</span></button>
+	<button class="cesium-button viewControl boundaries layerOff" id="lgas">LGAs&nbsp;<span class="on">ON</span>&nbsp;<span class="off">OFF</span></button>
+	<button class="cesium-button viewControl boundaries layerOff" id="electorates">Federal Electorates&nbsp;<span class="on">ON</span>&nbsp;<span class="off">OFF</span></button>-->
+
 `)
 
-$('.viewSelect').change(viewSelect);
-$('.boundarySelect').change(boundarySelect);
-$('.viewControl').click(viewControl);
+$('input[name="boundaries"]').change(viewRadio)
 
-const load = ()=>{
-	loadElectorates('QLD')
-}
-setTimeout(load,500)
+$('.viewSelect').change(viewSelect);
+$('.viewControl').click(viewControl);

@@ -30,6 +30,28 @@ body{
 .viewControl span{
 	pointer-events: none;
 }
-button.cesium-infoBox-camera{
+.viewRadio span{
+	pointer-events: none;
+}
+
+input[type="radio"]{
 	display: none;
+}
+
+/*input[type="radio"]:checked+label{
+
+}*/
+
+input[type="radio"]+label .on{
+	color: #777!important;
+}
+input[type="radio"]+label .off{
+	color: #f00!important;
+}
+
+input[type="radio"]:checked+label .on{
+	color: #0f0!important;
+}
+input[type="radio"]:checked+label .off{
+	color: #777!important;
 }

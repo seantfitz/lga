@@ -1,14 +1,11 @@
-Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxY2JiMDhjMS1jODcyLTQxYWQtYmJiOC1hNTUyNDE0Zjg2N2YiLCJpZCI6NjQ3MDIsImlhdCI6MTYyOTQyMjY0OX0.XrBfYMVmvrlNeNuAdbcCyVHJ44KMq_yCGptHtZ1F9VY';
-// const extent = Cesium.Rectangle.fromDegrees(80,-30,180,-20);//(W,S,E,N)
-const extent = Cesium.Rectangle.fromDegrees(90,-30,180,-20);//(W,S,E,N)
-// const extent = Cesium.Rectangle.fromDegrees(137,-30,155,-9);
+const extent = Cesium.Rectangle.fromDegrees(80,-30,180,-20);//(W,S,E,N)
 
 Cesium.Camera.DEFAULT_VIEW_RECTANGLE = extent;
 // Cesium.Camera.DEFAULT_VIEW_FACTOR = 0;
 
 const viewer = new Cesium.Viewer('cesiumContainer', {
-	imageryProvider: new Cesium.IonImageryProvider({ assetId: 3954 }),//asset added to account
-	// imageryProvider: false,
+	// imageryProvider: new Cesium.IonImageryProvider({ assetId: 3954 }),//asset added to account
+	imageryProvider: false,
 	// terrainProvider: Cesium.createWorldTerrain(),
 	timeline: false,
 	animation: false,
@@ -26,28 +23,162 @@ const viewer = new Cesium.Viewer('cesiumContainer', {
 
 	// rectangle: (113.338953078, -43.6345972634, 153.569469029, -10.6681857235),
 
-	// selectionIndicator : false,
+	selectionIndicator : false,
 	// infoBox : false,
 
-	// sceneMode: Cesium.SceneMode.SCENE2D,
+	sceneMode: Cesium.SceneMode.SCENE2D,
 	// mapMode2D: Cesium.MapMode2D.ROTATE,
 });
 
 let electorates = new Cesium.CustomDataSource("electorates")
 let lgas = new Cesium.CustomDataSource("lgas")
-let aggregated = new Cesium.CustomDataSource("aggregated")
+let agg = new Cesium.CustomDataSource("agg")
 let sites = new Cesium.CustomDataSource("sites")
 
 viewer.dataSources.add(electorates);
 viewer.dataSources.add(lgas);
-viewer.dataSources.add(aggregated);
+viewer.dataSources.add(agg);
 viewer.dataSources.add(sites);
 
 electorates.show = false;
 lgas.show = false;
-aggregated.show = true;
 
-const colours = [[255,0,0],[255,106,0],[255,213,0],[191,255,0],[84,255,0],[0,255,22],[0,255,128],[0,255,234],[0,169,255],[0,63,255],[42,0,255],[148,0,255],[254,0,253],[255,0,147],[255,0,41],[255,64,0],[255,170,0],[233,255,0],[127,255,0],[21,255,0],[0,255,86],[0,255,192],[0,211,255],[0,105,255],[0,0,255],[106,0,255],[212,0,255],[255,0,190],[255,0,83],[255,21,0],[255,128,0],[255,234,0],[169,255,0],[63,255,0],[0,255,43],[0,255,149],[0,254,255],[0,148,255],[0,41,255],[63,0,255],[169,0,255],[255,0,232],[255,0,126],[255,0,20],[255,85,0],[255,191,0],[212,255,0],[106,255,0],[1,255,1],[0,255,107],[0,255,213],[0,190,255],[0,84,255],[21,0,255],[127,0,255],[233,0,255],[255,0,168],[255,0,62],[255,43,0],[255,149,0]]
+let hue = -25;
+
+const CalculateRGBfromHSL = (H, S, L)=>{
+	let colour = { R: 0, G: 0, B: 0 };
+
+	if(H == -1.0 && S == -1.0){
+		colour.R = L * 255.0;
+		colour.G = L * 255.0;
+		colour.B = L * 255.0;
+	}
+	else{
+		let temporary_1;
+
+		if(L < 0.5)
+			temporary_1 = L * (1.0 + S);
+		else
+			temporary_1 = L + S - L * S;
+
+		let temporary_2;
+
+		temporary_2 = 2.0 * L - temporary_1;
+
+		let hue = H / 360.0;
+
+		let temporary_R = hue + 0.333;
+		let temporary_G = hue;
+		let temporary_B = hue - 0.333;
+
+		if(temporary_R < 0.0)
+			temporary_R += 1.0;
+		if(temporary_R > 1.0)
+			temporary_R -= 1.0;
+
+		if(temporary_G < 0.0)
+			temporary_G += 1.0;
+		if(temporary_G > 1.0)
+			temporary_G -= 1.0;
+
+		if(temporary_B < 0.0)
+			temporary_B += 1.0;
+		if(temporary_B > 1.0)
+			temporary_B -= 1.0;
+
+		// RED
+		if((6.0 * temporary_R) < 1.0)
+		{
+			colour.R = (temporary_2 + (temporary_1 - temporary_2) * 6.0 * temporary_R) * 255.0;
+		}
+		else if((2.0 * temporary_R) < 1.0)
+		{
+			colour.R = temporary_1 * 255.0;
+		}
+		else if((3.0 * temporary_R) < 2.0)
+		{
+			colour.R = (temporary_2 + (temporary_1 - temporary_2) * (0.666 - temporary_R) * 6.0) * 255.0;
+		}
+		else
+		{
+			colour.R = temporary_2 * 255.0;
+		}
+
+		// GREEN
+		if((6.0 * temporary_G) < 1.0)
+		{
+			colour.G = (temporary_2 + (temporary_1 - temporary_2) * 6.0 * temporary_G) * 255.0;
+		}
+		else if((2.0 * temporary_G) < 1.0)
+		{
+			colour.G = temporary_1 * 255.0;
+		}
+		else if((3.0 * temporary_G) < 2.0)
+		{
+			colour.G = (temporary_2 + (temporary_1 - temporary_2) * (0.666 - temporary_G) * 6.0) * 255.0;
+		}
+		else
+		{
+			colour.G = temporary_2 * 255.0;
+		}
+
+		// BLUE
+		if((6.0 * temporary_B) < 1.0)
+		{
+			colour.B = (temporary_2 + (temporary_1 - temporary_2) * 6.0 * temporary_B) * 255.0;
+		}
+		else if((2.0 * temporary_B) < 1.0)
+		{
+			colour.B = temporary_1 * 255.0;
+		}
+		else if((3.0 * temporary_B) < 2.0)
+		{
+			colour.B = (temporary_2 + (temporary_1 - temporary_2) * (0.666 - temporary_B) * 6.0) * 255.0;
+		}
+		else
+		{
+			colour.B = temporary_2 * 255.0;
+		}
+	}
+
+	colour.R = Math.round(Math.abs(colour.R));
+	colour.G = Math.round(Math.abs(colour.G));
+	colour.B = Math.round(Math.abs(colour.B));
+
+	return colour;
+}
+
+// console.log(CalculateRGBfromHSL(25,1,0.5))
+
+let hughes = {}
+colours = []
+
+for(let i = 0; i < 60; i++){
+	hue += 25;
+	if(hue >= 360){
+		hue -= 360
+	}
+	// console.log(!hughes[hue])
+	// hughes[hue] = hue
+	
+	// console.log(hue)
+
+	let col = CalculateRGBfromHSL(hue,1,0.5)
+
+	// console.log(col)
+	colours[i] = [col['R'],col['G'],col['B']]
+}
+console.log(JSON.stringify(colours))
+
+
+// while(!hughes[hue]){
+// 	hue += 25
+// 	if(hue >= 360){
+// 		hue -= 360
+// 	}
+// 	hughes[hue] = hue;
+// 	console.log(hue)
+// }
 
 const toTitleCase = (str)=>{
 	return str.replace(
@@ -97,19 +228,17 @@ const loadSites = (state)=>{
 const appendSites = (o,state)=>{
 	// console.log(o.length)
 	for(let i in o){
-		let description = `Population: ${numberWithCommas(o[i]['population'])}`
+		let description = `Population: ${o[i]['population']}`
 
 		sites.entities.add({
 			name: o[i]['locality'],
 			description: description,
-			position: Cesium.Cartesian3.fromDegrees(o[i]['long'], o[i]['lat'],500),
+			position: Cesium.Cartesian3.fromDegrees(o[i]['long'], o[i]['lat']),
 			point: {
 				pixelSize : 5,
 				color : Cesium.Color.RED,
 				outlineColor : Cesium.Color.WHITE,
 				outlineWidth : 2,
-				translucencyByDistance: new Cesium.NearFarScalar(100000, 1, 5000000, 0),
-				depthTestAgainstTerrain: false,
 			},
 			label: {
 				text: o[i]['locality'],
@@ -118,8 +247,7 @@ const appendSites = (o,state)=>{
 				verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
 				pixelOffset : new Cesium.Cartesian2(0, -9),
 				scaleByDistance: new Cesium.NearFarScalar(50000, 1, 5000000, 0),
-				translucencyByDistance: new Cesium.NearFarScalar(100000, 1, 5000000, 0),
-				depthTestAgainstTerrain: false,
+				// scaleByDistance: new Cesium.NearFarScalar(50000, 1, 2500000, 0),
 			}
 		})
 	}
@@ -149,10 +277,8 @@ const loadLGAs = (state)=>{
 		appendLGAs(window[propName],state)
 	}
 }
-// let repNames = {}
-const appendLGAs = (o,state)=>{
 
-	let thisCol = 0;
+const appendLGAs = (o,state)=>{
 	// console.log(o.length)
 	for(let i in o){
 
@@ -166,77 +292,41 @@ const appendLGAs = (o,state)=>{
 			LGA_NAME = o[i]['properties']['LGA_NAME']
 		}
 
-		/**/
-		// if(!repNames[LGA_NAME]){
-		// 	repNames[LGA_NAME] = 1
-		// }else{
-		// 	repNames[LGA_NAME] ++
-		// }
-		/**/
-
 		let coords = o[i]['geometry']['coordinates'][0]
 		let boundary = []
-		
-		let r = colours[thisCol][0] / 255
-		let g = colours[thisCol][1] / 255
-		let b = colours[thisCol][2] / 255
-		let colour = new Cesium.Color(r,g,b,0.25)
-
-		thisCol++;
-		if(thisCol >= colours.length - 1){
-			thisCol = 0;
-		}
-
-		let W = 180;//lower lon
-		let E = -180;//higher lon
-		let S = 90;//lower lat
-		let N = -90;//higher lat
+		// let colour = (255,200,0)
+		let colour = new Cesium.Color(0,1,0,0.5)
 
 		for(let i in coords){
 			boundary.push(coords[i][0],coords[i][1])
-
-			if(coords[i][0] < W){W = coords[i][0]}
-			if(coords[i][0] > E){E = coords[i][0]}
-			if(coords[i][1] < S){S = coords[i][1]}
-			if(coords[i][1] > N){N = coords[i][1]}
 		}
-
-		let midLat = (S + N) / 2
-		let midLon = (W + E) / 2
 
 		lgas.entities.add({
 			name: LGA_NAME,
 			polygon: {
 				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
 				height : 0,
+				// material : Cesium.Color.WHITE.withAlpha(0.25),
+				// material : Cesium.Color[colour].withAlpha(1),
 				material : colour,
 				outline : true,
 				outlineColor : Cesium.Color.BLACK,
 			},
-			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 1000),
 			label: {
-				// text: LGA_NAME.replace(/ /g,'\n'),
-				text: toTitleCase(LGA_NAME).replace(/ /g,'\n'),
+				text: LGA_NAME,
 				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
 				outlineWidth : 2,
-				fillColor: Cesium.Color.SKYBLUE,
-				scaleByDistance: new Cesium.NearFarScalar(50000, 1.5, 5000000, 0),
-				translucencyByDistance: new Cesium.NearFarScalar(50000, 0, 100000, 1),
-				depthTestAgainstTerrain: false,
+				// verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
+				// pixelOffset : new Cesium.Cartesian2(0, -9),
+				// scaleByDistance: new Cesium.NearFarScalar(50000, 1, 5000000, 0),
 			}
 		})
 	}
+	// viewer.zoomTo(viewer.dataSources.lgas)// viewer.camera.flyTo(viewer.dataSources.lgas)
 	loadSites(state)
-	// console.log(JSON.stringify(repNames))
-	// let k = Object.keys(repNames)
-	// for(let i in k){
-	// 	if(repNames[k[i]] > 1){
-	// 		console.log(k[i],repNames[k[i]])
-	// 	}
-	// }
 }
 
-const loadAggregated = (state)=>{
+const loadAgg = (state)=>{
 	let propName = `aggregated_${state}`
 	if(typeof(window[propName]) !== 'object'){
 		let info = fetch(`script/aggregated/${state}.json`,{
@@ -252,15 +342,15 @@ const loadAggregated = (state)=>{
 			})
 		})
 		.then(() => {
-			appendAggregated(window[propName],state)
+			appendAgg(window[propName],state)
 		})
 		.catch(err => console.error('Caught error: ', err))
 	}else{
-		appendAggregated(window[propName],state)
+		appendAgg(window[propName],state)
 	}
 }
 
-const appendAggregated = (o,state)=>{
+const appendAgg = (o,state)=>{
 	// console.log(o.length)
 	for(let i in o){
 
@@ -271,42 +361,19 @@ const appendAggregated = (o,state)=>{
 
 		let coords = o[i]['geometry']['coordinates'][0]
 		let boundary = []
-		//WSEN
-		let W = 180;//lower lon
-		let E = -180;//higher lon
-		let S = 90;//lower lat
-		let N = -90;//higher lat
 
 		for(let i in coords){
 			boundary.push(coords[i][0],coords[i][1])
-
-			if(coords[i][0] < W){W = coords[i][0]}
-			if(coords[i][0] > E){E = coords[i][0]}
-			if(coords[i][1] < S){S = coords[i][1]}
-			if(coords[i][1] > N){N = coords[i][1]}
 		}
 
-		let midLat = (S + N) / 2
-		let midLon = (W + E) / 2
-
-		aggregated.entities.add({
+		agg.entities.add({
 			name: groupName,
 			polygon: {
 				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
 				height : 0,
-				material : Cesium.Color[colour].withAlpha(0.25),
+				material : Cesium.Color[colour].withAlpha(0.5),
 				outline : true,
 				outlineColor : Cesium.Color.BLACK,
-			},
-			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 250000),
-			label: {
-				text: groupName.replace(' - ',`\n`),
-				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-				outlineWidth : 2,
-				fillColor: Cesium.Color.SKYBLUE,
-				scaleByDistance: new Cesium.NearFarScalar(50000, 2, 5000000, 0.5),
-				translucencyByDistance: new Cesium.NearFarScalar(10000, 0, 5000000, 1),
-				depthTestAgainstTerrain: false,
 			}
 		})
 	}
@@ -340,8 +407,6 @@ const loadElectorates = (state)=>{
 }
 
 const appendElectorates = (o,state)=>{
-
-	let thisCol = 0;
 	// console.log(o.length)
 	for(let i in o){
 
@@ -354,36 +419,19 @@ const appendElectorates = (o,state)=>{
 		let Australian = o[i]['properties']['Australian']
 		let Area_SqKm = o[i]['properties']['Area_SqKm']
 		let Sortname = o[i]['properties']['Sortname']
+
+		let colour = 'PINK'// o[i]['properties']['colour']
+
 		let coords = o[i]['geometry']['coordinates'][0]
-		let description = `Area:&nbsp;${decimalise(Area_SqKm,2)}&nbsp;km<sup>2</sup>`
 		let boundary = []
 
-		let r = colours[thisCol][0] / 255
-		let g = colours[thisCol][1] / 255
-		let b = colours[thisCol][2] / 255
-		let colour = new Cesium.Color(r,g,b,0.25)
-
-		let W = 180;//lower lon
-		let E = -180;//higher lon
-		let S = 90;//lower lat
-		let N = -90;//higher lat
-
-		thisCol++;
-		if(thisCol >= colours.length - 1){
-			thisCol = 0;
-		}
+		let description = `
+			Area:&nbsp;${decimalise(Area_SqKm,2)}&nbsp;km<sup>2</sup>
+		`
 
 		for(let i in coords){
 			boundary.push(coords[i][0],coords[i][1])
-
-			if(coords[i][0] < W){W = coords[i][0]}
-			if(coords[i][0] > E){E = coords[i][0]}
-			if(coords[i][1] < S){S = coords[i][1]}
-			if(coords[i][1] > N){N = coords[i][1]}
 		}
-
-		let midLat = (S + N) / 2
-		let midLon = (W + E) / 2
 
 		electorates.entities.add({
 			name: `Electorate of ${Elect_div}`,
@@ -391,35 +439,19 @@ const appendElectorates = (o,state)=>{
 			polygon: {
 				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
 				height: 0,
-				material : colour,
+				material : Cesium.Color[colour].withAlpha(0.5),
 				outline : true,
 				outlineColor : Cesium.Color.BLACK,
-			},
-			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 5000),
-			label: {
-				// text: Elect_div.toUpperCase(),
-				text: Elect_div,
-				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-				outlineWidth : 2,
-				fillColor: Cesium.Color.SKYBLUE,
-				// scaleByDistance: new Cesium.NearFarScalar(50000, 1.5, 5000000, 0),
-				scaleByDistance: new Cesium.NearFarScalar(50000, 1.25, 5000000, 0.5),
-				// translucencyByDistance: new Cesium.NearFarScalar(500, 0.25, 5000000, 1),
-
-				// scaleByDistance: new Cesium.NearFarScalar(50000, 1.5, 5000000, 0),
-				translucencyByDistance: new Cesium.NearFarScalar(50000, 0, 100000, 1),
-
-				depthTestAgainstTerrain: false,
 			}
 		})
 	}
-	loadAggregated(state)
+	loadAgg(state)
 }
 
 const viewSelect = (e)=>{
 	sites.entities.removeAll();
 	lgas.entities.removeAll();
-	aggregated.entities.removeAll();
+	agg.entities.removeAll();
 	electorates.entities.removeAll();
 	loadElectorates(e.target.value);
 }
@@ -436,9 +468,9 @@ const viewControl = (e)=>{
 
 const boundarySelect = (e)=>{
 	switch(e.target.value){
-		case 'aggregated': aggregated.show = true; lgas.show = false; electorates.show = false; break;
-		case 'lgas': aggregated.show = false; lgas.show = true; electorates.show = false; break;
-		case 'electorates': aggregated.show = false; lgas.show = false; electorates.show = true; break;
+		case 'agg': agg.show = true; lgas.show = false; electorates.show = false; break;
+		case 'lgas': agg.show = false; lgas.show = true; electorates.show = false; break;
+		case 'electorates': agg.show = false; lgas.show = false; electorates.show = true; break;
 	}
 }
 
@@ -454,8 +486,8 @@ $('.cesium-viewer-toolbar').append(`
 		<option value="ACT">ACT</option>
 	</select>
 
-	<select class="cesium-button boundarySelect">
-		<option value="aggregated">Aggregated Regions</option>
+	<select class="cesium-button boundarySelect" name="state" id="state">
+		<option value="agg">Aggregated Regions</option>
 		<option value="lgas">LGAs</option>
 		<option value="electorates">Federal Electorates</option>
 	</select>
