@@ -13,7 +13,7 @@ const viewer = new Cesium.Viewer('cesiumContainer', {
 	timeline: false,
 	animation: false,
 	geocoder: false,
-	baseLayerPicker: false,
+	// baseLayerPicker: false,
 	sceneModePicker: false,
 	navigationHelpButton: false,
 	// homeButton: false,
@@ -42,6 +42,8 @@ viewer.dataSources.add(electorates);
 viewer.dataSources.add(lgas);
 viewer.dataSources.add(aggregated);
 viewer.dataSources.add(sites);
+
+//viewer.scene.globe.depthTestAgainstTerrain = true;//https://community.cesium.com/t/render-polygons-on-ground/7096//2109101041
 
 electorates.show = false;
 lgas.show = false;
@@ -460,7 +462,7 @@ $('.cesium-viewer-toolbar').append(`
 		<option value="electorates">Federal Electorates</option>
 	</select>
 
-	<button class="cesium-button viewControl sites layerOn" id="sites">Sites&nbsp;<span class="on">ON</span>&nbsp;<span class="off">OFF</span></button>
+	<button class="cesium-button viewControl sites layerOn" id="sites">Towns&nbsp;<span class="on">ON</span>&nbsp;<span class="off">OFF</span></button>
 `)
 
 $('.viewSelect').change(viewSelect);
