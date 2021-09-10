@@ -455,7 +455,7 @@ $('.cesium-viewer-toolbar').append(`
 	</select>
 
 	<select class="cesium-button boundarySelect">
-		<option value="aggregated">Aggregated Regions</option>
+		<option value="aggregated">News Zones</option>
 		<option value="lgas">LGAs</option>
 		<option value="electorates">Federal Electorates</option>
 	</select>
