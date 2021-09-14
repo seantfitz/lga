@@ -7,18 +7,18 @@ const extent = Cesium.Rectangle.fromDegrees(112.921124550164,-43.7429686004967,1
 Cesium.Camera.DEFAULT_VIEW_RECTANGLE = extent;
 // Cesium.Camera.DEFAULT_VIEW_FACTOR = 0;
 
-const osm = new Cesium.OpenStreetMapImageryProvider({
-	// url:'https://a.tile.openstreetmap.org/'
-	// url:'http://tile.stamen.com/watercolor'
-	// url:'http://tile.stamen.com/toner-background'
-	url:'https://tile.stamen.com/toner-background'
-});
+// const osm = new Cesium.OpenStreetMapImageryProvider({
+// 	// url:'https://a.tile.openstreetmap.org/'
+// 	// url:'http://tile.stamen.com/watercolor'
+// 	// url:'http://tile.stamen.com/toner-background'
+// 	url:'https://tile.stamen.com/toner-background'
+// });
 
 // Cesium.OpenStreetMapImageryProvider({url : 'https://a.tile.openstreetmap.org/'})
 
 const viewer = new Cesium.Viewer('cesiumContainer', {
-	// imageryProvider: new Cesium.IonImageryProvider({ assetId: 3954 }),//asset added to account
-	imageryProvider: osm,//asset added to account
+	imageryProvider: new Cesium.IonImageryProvider({ assetId: 3954 }),//asset added to account
+	// imageryProvider: osm,//asset added to account
 	// imageryProvider: false,
 	// terrainProvider: Cesium.createWorldTerrain(),
 	timeline: false,
