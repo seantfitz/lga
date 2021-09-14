@@ -10,7 +10,8 @@ Cesium.Camera.DEFAULT_VIEW_RECTANGLE = extent;
 const osm = new Cesium.OpenStreetMapImageryProvider({
 	// url:'https://a.tile.openstreetmap.org/'
 	// url:'http://tile.stamen.com/watercolor'
-	url:'http://tile.stamen.com/toner-background'
+	// url:'http://tile.stamen.com/toner-background'
+	url:'https://tile.stamen.com/toner-background'
 });
 
 // Cesium.OpenStreetMapImageryProvider({url : 'https://a.tile.openstreetmap.org/'})
