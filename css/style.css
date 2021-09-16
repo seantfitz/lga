@@ -47,3 +47,6 @@ select:disabled{
 	border-radius: 7px;
 	overflow-x: hidden;
 }
+.displayNone{
+	display: none;
+}

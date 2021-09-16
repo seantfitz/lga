@@ -93,18 +93,27 @@ let selections = {
 /*GLOBAL VARIABLES*/
 
 /*FUNCTIONS*/
+viewer.trackedEntityChanged.addEventListener((e)=>{
+	console.log(e)
+})
 viewer.selectedEntityChanged.addEventListener((e)=>{
 
-	// if(window['polygon'] != undefined){
-	// 	let p = window['polygon']
-	// 	let rgba = e['_polygon']['_material']['_color']['_value']
-	// 	let R = rgba['red']
-	// 	let G = rgba['green']
-	// 	let B = rgba['blue']
-	// 	let nc = new Cesium.Color(R,G,B,0.25)
-	// 	p.polygon.material = nc
-	// }
+	viewer.trackedEntity = undefined;
 
+	/*alpha channel*/
+	if(window['polygon'] != undefined){
+		let p = window['polygon']
+		let rgba = p['_polygon']['_material']['_color']['_value']
+		let R = rgba['red']
+		let G = rgba['green']
+		let B = rgba['blue']
+		let nc = new Cesium.Color(R,G,B,0.25)
+		p.polygon.material = nc
+		p.polygon.outline = false
+		// p.polygon.outlineColor = Cesium.Color.BLACK
+	}
+	/*alpha channel*/
+	
 	if(e == undefined){
 		let b = stateBox[$('.stateSelect').val()];
 
@@ -115,6 +124,17 @@ viewer.selectedEntityChanged.addEventListener((e)=>{
 		});
 		return false
 	}else{
+
+		/*selection indicator*/
+		switch(!e['_polygon']){
+			case false: $('.cesium-viewer-selectionIndicatorContainer').addClass('displayNone'); break;
+			case true:
+			setTimeout(()=>{
+				$('.cesium-viewer-selectionIndicatorContainer').removeClass('displayNone')
+			},250);
+			break;
+		}
+		/*selection indicator*/
 
 		let id = e['_id'], name = e['_name'], owner = e['entityCollection']['_owner']['_name']
 
@@ -129,14 +149,19 @@ viewer.selectedEntityChanged.addEventListener((e)=>{
 			
 			let b = e['_boundingBox']
 			
-			// let rgba = e['_polygon']['_material']['_color']['_value']
-			// let R = rgba['red']
-			// let G = rgba['green']
-			// let B = rgba['blue']
-			// let nc = new Cesium.Color(R,G,B,1)
+			/*alpha channel*/
+			let rgba = e['_polygon']['_material']['_color']['_value']
+			let R = rgba['red']
+			let G = rgba['green']
+			let B = rgba['blue']
+			let nc = new Cesium.Color(R,G,B,0.5)
 
-			// window['polygon'] = e
-			// e.polygon.material = nc
+			window['polygon'] = e
+			e.polygon.material = nc
+			e.polygon.outline = true
+			// e.polygon.outlineColor = Cesium.Color.RED
+			// e.polygon.outlineColor = new Cesium.Color(0,1,0,1)
+			/*alpha channel*/
 			
 			viewer.camera.flyTo({
 				destination : Cesium.Rectangle.fromDegrees(b['W'],b['S'],b['E'],b['N'])
@@ -216,9 +241,10 @@ const decimalise = (val,dec)=>{
 }
 
 const listSelections = (a)=>{
-
-	if(a === null){
+	// console.log(a)
+	if(a === null || a == 'clear' || a == 'deselect'){
 		$('.areaSelect').prop('disabled',false);
+		$('.areaFocus').prop('disabled',true).val('clear');//
 	}else{
 	
 		let s = Object.keys(selections[a]).sort();
@@ -240,6 +266,7 @@ const listSelections = (a)=>{
 	}
 };
 
+/*ENTITY FUNCTIONS*/
 const loadLocalities = (state)=>{
 	let propName = `localities_${state}`
 	if(typeof(window[propName]) !== 'object'){
@@ -268,14 +295,29 @@ const appendLocalities = (o,state)=>{
 	// console.log(o.length)
 	for(let i in o){
 		let description = `Population: ${numberWithCommas(o[i]['population'])}`
+		let colour = Cesium.Color.GREEN;
+		let pixelSize = 5;
+		switch(true){
+			case Number(o[i]['population']) >= 12e3:
+			colour = Cesium.Color.RED;
+			pixelSize = 15;
+			break;
+			
+			case Number(o[i]['population']) >= 1500:
+			colour = Cesium.Color.BLUE;
+			pixelSize = 10;
+			break;
+		}
 
 		localities.entities.add({
 			name: o[i]['locality'],
 			description: description,
 			position: Cesium.Cartesian3.fromDegrees(o[i]['long'], o[i]['lat'],500),
 			point: {
-				pixelSize : 5,
-				color : Cesium.Color.RED,
+				// pixelSize : 5,
+				pixelSize : pixelSize,
+				// color : Cesium.Color.RED,
+				color : colour,
 				outlineColor : Cesium.Color.WHITE,
 				outlineWidth : 2,
 				translucencyByDistance: new Cesium.NearFarScalar(100000, 1, 5000000, 0),
@@ -387,7 +429,7 @@ const appendLGAs = (o,state)=>{
 				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
 				height : 0,
 				material : colour,
-				outline : true,
+				outline : false,
 				outlineColor : Cesium.Color.BLACK,
 			},
 			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 1000),
@@ -476,7 +518,7 @@ const appendZones = (o,state)=>{
 				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
 				height : 0,
 				material : Cesium.Color[colour].withAlpha(0.25),
-				outline : true,
+				outline : false,
 				outlineColor : Cesium.Color.BLACK,
 			},
 			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 250000),
@@ -571,13 +613,13 @@ const appendFederal = (o,state)=>{
 		let midLon = (W + E) / 2
 
 		federal.entities.add({
-			name: `Electorate of ${Elect_div}`,
+			name: `Federal Electorate of ${Elect_div}`,
 			description: description,
 			polygon: {
 				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
 				height: 0,
 				material : colour,
-				outline : true,
+				outline : false,
 				outlineColor : Cesium.Color.BLACK,
 			},
 			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 5000),
@@ -601,6 +643,7 @@ const appendFederal = (o,state)=>{
 	// console.log(o)
 	// console.log(viewer.dataSourceDisplay.ready)
 }
+/*ENTITY FUNCTIONS*/
 
 const stateSelect = (e)=>{
 	
@@ -642,7 +685,6 @@ const viewControl = (e)=>{
 	let menu = $('.localityFocus')
 	localities.show = !localities.show;
 	menu.prop('disabled',(!menu.prop('disabled')))
-	// console.log(menu.prop('disabled'))
 	if(x.hasClass('layerOff')){
 		x.removeClass('layerOff')
 	}else{
@@ -678,6 +720,13 @@ const areaSelect = (e)=>{
 
 	// 	case change:
 		
+		if(v == 'deselect'){
+			e.target.value = 'clear';
+			$('#clearDivisionSelection').html('None')
+		}else{
+			$('#clearDivisionSelection').html('Clear Selection')
+		}
+		
 		lgas.show = is_lgas;
 		stateDivisions.show = is_stateDivisions;
 		federal.show = is_federal;
@@ -695,6 +744,8 @@ const areaSelect = (e)=>{
 		viewer.camera.flyTo({
 			destination : Cesium.Rectangle.fromDegrees(b[0],b[1],b[2],b[3])
 		});
+
+		
 		
 	// 	break;
 
@@ -754,7 +805,8 @@ $('.cesium-viewer-toolbar').append(`
 	</select>
 
 	<select disabled class="cesium-button areaSelect">
-		<option selected disabled value="clear">Division Type</option>
+		<option selected hidden value="clear">Division Type</option>
+		<option value="deselect" id="clearDivisionSelection">None</option>
 		<option value="lgas">LGAs</option>
 		<option hidden value="stateDivisions">State Electorates</option>
 		<option value="federal">Federal Electorates</option>
@@ -780,4 +832,11 @@ $('.stateSelect').change(stateSelect);
 $('.areaSelect').change(areaSelect);
 $('.viewControl').click(viewControl);
 $('.areaFocus').change(areaFocus)
+
+$(window).keyup((e)=>{
+	if(e.keyCode == 27){
+		viewer.trackedEntity = undefined;
+		viewer.selectedEntity = undefined;
+	}
+})
 /*BINDINGS*/
