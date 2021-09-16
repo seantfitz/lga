@@ -42,3 +42,8 @@ select{
 select:disabled{
 	cursor: not-allowed!important;
 }
+.cesium-infoBox{
+	right: 10px;
+	border-radius: 7px;
+	overflow-x: hidden;
+}

@@ -14,8 +14,8 @@ const osm = new Cesium.OpenStreetMapImageryProvider({
 });
 // Cesium.OpenStreetMapImageryProvider({url : 'https://a.tile.openstreetmap.org/'})
 const viewer = new Cesium.Viewer('cesiumContainer', {
-	imageryProvider: new Cesium.IonImageryProvider({ assetId: 3954 }),//asset added to account
-	// imageryProvider: osm,
+	// imageryProvider: new Cesium.IonImageryProvider({ assetId: 3954 }),//asset added to account
+	imageryProvider: osm,
 	// imageryProvider: false,
 	// terrainProvider: Cesium.createWorldTerrain(),
 	timeline: false,
