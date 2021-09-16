@@ -1,4 +1,5 @@
-Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxY2JiMDhjMS1jODcyLTQxYWQtYmJiOC1hNTUyNDE0Zjg2N2YiLCJpZCI6NjQ3MDIsImlhdCI6MTYyOTQyMjY0OX0.XrBfYMVmvrlNeNuAdbcCyVHJ44KMq_yCGptHtZ1F9VY';
+/*MAP SETUP*/
+//Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxY2JiMDhjMS1jODcyLTQxYWQtYmJiOC1hNTUyNDE0Zjg2N2YiLCJpZCI6NjQ3MDIsImlhdCI6MTYyOTQyMjY0OX0.XrBfYMVmvrlNeNuAdbcCyVHJ44KMq_yCGptHtZ1F9VY';
 const extent = Cesium.Rectangle.fromDegrees(112.921124550164,-43.7429686004967,153.660861,-9.14118954253052);//(W,S,E,N)
 Cesium.Camera.DEFAULT_VIEW_RECTANGLE = extent;
 // Cesium.Camera.DEFAULT_VIEW_FACTOR = 0;
@@ -61,8 +62,37 @@ federal.show = false;
 zones.show = false;
 broadcast.show = false;
 // localities.show = false;
+/*MAP SETUP*/
 
-/*****/
+/*GLOBAL VARIABLES*/
+const colours = [[255,0,0],[255,106,0],[255,213,0],[191,255,0],[84,255,0],[0,255,22],[0,255,128],[0,255,234],[0,169,255],[0,63,255],[42,0,255],[148,0,255],[254,0,253],[255,0,147],[255,0,41],[255,64,0],[255,170,0],[233,255,0],[127,255,0],[21,255,0],[0,255,86],[0,255,192],[0,211,255],[0,105,255],[0,0,255],[106,0,255],[212,0,255],[255,0,190],[255,0,83],[255,21,0],[255,128,0],[255,234,0],[169,255,0],[63,255,0],[0,255,43],[0,255,149],[0,254,255],[0,148,255],[0,41,255],[63,0,255],[169,0,255],[255,0,232],[255,0,126],[255,0,20],[255,85,0],[255,191,0],[212,255,0],[106,255,0],[1,255,1],[0,255,107],[0,255,213],[0,190,255],[0,84,255],[21,0,255],[127,0,255],[233,0,255],[255,0,168],[255,0,62],[255,43,0],[255,149,0]]
+
+const stateBox = {//W,S,E,N
+	// NSW:[140.999286483091,-37.5052674371251,159.105448901665,-28.157007484129],
+	NSW:[140.999286483091,-37.5052674371251,153.660861,-28.157007484129],
+	QLD:[137.99596539614,-29.1778849996844,153.555247484414,-9.14118954253052],
+	VIC:[140.961865804717,-39.1591796902753,149.976504105742,-33.980636405904],
+	TAS:[143.818576726639,-43.7429686004967,148.50313834661,-39.1919773009046],
+	SA:[129.001348803946,-38.0625895910114,141.002962544954,-25.996363071308],
+	WA:[112.921124550164,-35.134832521502,129.001862438231,-13.6894781340124],
+	NT:[129.000484929137,-25.9986044823092,138.001207833215,-10.965900135588],
+	ACT:[148.762795689483,-35.920517211112,149.399292549604,-35.1244029421091],
+
+	AUS:[112.921124550164,-43.7429686004967,153.660861,-9.14118954253052]
+}
+
+let selections = {
+	clear:{},
+	lgas:{},
+	stateDivisions:{},
+	federal:{},
+	zones:{},
+	broadcast:{},
+	localities:{},
+}
+/*GLOBAL VARIABLES*/
+
+/*FUNCTIONS*/
 viewer.selectedEntityChanged.addEventListener((e)=>{
 
 	// if(window['polygon'] != undefined){
@@ -116,33 +146,6 @@ viewer.selectedEntityChanged.addEventListener((e)=>{
 		}
 	}
 })
-/*****/
-
-const colours = [[255,0,0],[255,106,0],[255,213,0],[191,255,0],[84,255,0],[0,255,22],[0,255,128],[0,255,234],[0,169,255],[0,63,255],[42,0,255],[148,0,255],[254,0,253],[255,0,147],[255,0,41],[255,64,0],[255,170,0],[233,255,0],[127,255,0],[21,255,0],[0,255,86],[0,255,192],[0,211,255],[0,105,255],[0,0,255],[106,0,255],[212,0,255],[255,0,190],[255,0,83],[255,21,0],[255,128,0],[255,234,0],[169,255,0],[63,255,0],[0,255,43],[0,255,149],[0,254,255],[0,148,255],[0,41,255],[63,0,255],[169,0,255],[255,0,232],[255,0,126],[255,0,20],[255,85,0],[255,191,0],[212,255,0],[106,255,0],[1,255,1],[0,255,107],[0,255,213],[0,190,255],[0,84,255],[21,0,255],[127,0,255],[233,0,255],[255,0,168],[255,0,62],[255,43,0],[255,149,0]]
-
-const stateBox = {//W,S,E,N
-	// NSW:[140.999286483091,-37.5052674371251,159.105448901665,-28.157007484129],
-	NSW:[140.999286483091,-37.5052674371251,153.660861,-28.157007484129],
-	QLD:[137.99596539614,-29.1778849996844,153.555247484414,-9.14118954253052],
-	VIC:[140.961865804717,-39.1591796902753,149.976504105742,-33.980636405904],
-	TAS:[143.818576726639,-43.7429686004967,148.50313834661,-39.1919773009046],
-	SA:[129.001348803946,-38.0625895910114,141.002962544954,-25.996363071308],
-	WA:[112.921124550164,-35.134832521502,129.001862438231,-13.6894781340124],
-	NT:[129.000484929137,-25.9986044823092,138.001207833215,-10.965900135588],
-	ACT:[148.762795689483,-35.920517211112,149.399292549604,-35.1244029421091],
-
-	AUS:[112.921124550164,-43.7429686004967,153.660861,-9.14118954253052]
-}
-
-let selections = {
-	clear:{},
-	lgas:{},
-	stateDivisions:{},
-	federal:{},
-	zones:{},
-	broadcast:{},
-	localities:{},
-}
 
 const toTitleCase = (str)=>{
 	return str.replace(
@@ -151,6 +154,55 @@ const toTitleCase = (str)=>{
 			return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
 		}
 	);
+}
+
+const wordWrap = (str)=>{
+
+	str = toTitleCase(str)
+
+	let words = str.split(' ')
+	let len = words.length
+	let out;
+
+	if(len > 1){
+
+		let parity = len % 2;
+
+		let lo = Math.floor(len / 2) - 1;
+		let hi = Math.ceil(len / 2) - 1;
+
+		let a = words[0]
+		let aa = words[0]
+		let b = '';
+		let bb = '';
+
+		for(let i = 1; i < len; i++){
+
+			if(i <= lo){
+				a += ` ${words[i]}`
+				aa += ` ${words[i]}`
+			}
+			if(i == hi && parity == 1){
+				aa += ` ${words[i]}`
+				bb += `${words[i]}`
+			}
+			if(i > hi){
+				b += ` ${words[i]}`
+				bb += ` ${words[i]}`
+			}
+		}
+
+		if(Math.abs(a.length - bb.length) < Math.abs(aa.length - b.length)){
+			out = `${a}\n${bb}`;
+		}else{
+			out = `${aa}\n${b}`;
+		}
+	}else{
+		console.log(toTitleCase(str))
+		return toTitleCase(str)
+	}
+
+	return out.replace(/\n /g,'\n')
 }
 
 const numberWithCommas = (x)=>{
@@ -163,11 +215,8 @@ const decimalise = (val,dec)=>{
 	return numberWithCommas(result)
 }
 
-/****************************************************************************/
-
 const listSelections = (a)=>{
 
-	// if(a === 'clear'){
 	if(a === null){
 		$('.areaSelect').prop('disabled',false);
 	}else{
@@ -184,7 +233,7 @@ const listSelections = (a)=>{
 		$('.areaFocus').html(`<option selected disabled value="clear" id="dynamicOption">Select ${d}</option>`)
 		
 		for(let i in s){
-			$('.areaFocus').append(`<option value="${selections[a][s[i]]}">${s[i]}</option>`)
+			$('.areaFocus').append(`<option value="${selections[a][s[i]]}">${toTitleCase(s[i])}</option>`)
 		}
 
 		$('.areaSelect, .areaFocus').prop('disabled',false);
@@ -222,7 +271,6 @@ const appendLocalities = (o,state)=>{
 
 		localities.entities.add({
 			name: o[i]['locality'],
-			// tooltip: o[i]['locality'],
 			description: description,
 			position: Cesium.Cartesian3.fromDegrees(o[i]['long'], o[i]['lat'],500),
 			point: {
@@ -333,8 +381,6 @@ const appendLGAs = (o,state)=>{
 		let midLat = (S + N) / 2
 		let midLon = (W + E) / 2
 
-		// o[i]['boundingBox'] = {W:W,E:E,S:S,N:N}
-
 		lgas.entities.add({
 			name: LGA_NAME,
 			polygon: {
@@ -346,8 +392,7 @@ const appendLGAs = (o,state)=>{
 			},
 			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 1000),
 			label: {
-				// text: LGA_NAME.replace(/ /g,'\n'),
-				text: toTitleCase(LGA_NAME).replace(/ /g,'\n'),
+				text: wordWrap(LGA_NAME),
 				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
 				outlineWidth : 2,
 				fillColor: Cesium.Color.SKYBLUE,
@@ -361,11 +406,6 @@ const appendLGAs = (o,state)=>{
 		let guid = lgas['_entityCollection']['_entities']['_array'][i]['_id']
 		window['currentEntities'][guid] = lgas['_entityCollection']['_entities']['_array'][i]
 		selections['lgas'][LGA_NAME] = guid
-
-		// o[i]['_id'] = guid
-		// o[i]['selectName'] = LGA_NAME
-		// console.log(guid)
-		// $('.areaFocus').append(`<option value="${guid}">${LGA_NAME}</option>`)
 	}
 	loadLocalities(state)
 	// console.log(JSON.stringify(repNames))
@@ -375,16 +415,6 @@ const appendLGAs = (o,state)=>{
 	// 		console.log(k[i],repNames[k[i]])
 	// 	}
 	// }
-
-	// console.log(window['currentEntities'])
-	// console.log(o)
-	// console.log(selections)
-	// console.log(Object.keys(selections).sort())
-	// console.log(o[1]['selectName'],o[1]['_id'])
-	// $(`#${o[1]['_id']}`).click()
-
-	// viewer.selectedEntity = $(`#${o[1]['_id']}`);
-	// console.log(lgas)
 }
 
 const loadZones = (state)=>{
@@ -470,8 +500,6 @@ const appendZones = (o,state)=>{
 	// console.log(o)
 }
 
-/******************************/
-
 const loadFederal = (state)=>{
 	let propName = `federal_${state}`
 	if(typeof(window[propName]) !== 'object'){
@@ -554,18 +582,12 @@ const appendFederal = (o,state)=>{
 			},
 			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 5000),
 			label: {
-				// text: Elect_div.toUpperCase(),
 				text: Elect_div,
 				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
 				outlineWidth : 2,
 				fillColor: Cesium.Color.SKYBLUE,
-				// scaleByDistance: new Cesium.NearFarScalar(50000, 1.5, 5000000, 0),
 				scaleByDistance: new Cesium.NearFarScalar(50000, 1.25, 5000000, 0.5),
-				// translucencyByDistance: new Cesium.NearFarScalar(500, 0.25, 5000000, 1),
-
-				// scaleByDistance: new Cesium.NearFarScalar(50000, 1.5, 5000000, 0),
 				translucencyByDistance: new Cesium.NearFarScalar(50000, 0, 100000, 1),
-
 				depthTestAgainstTerrain: false,
 			},
 			boundingBox: {W:W,E:E,S:S,N:N},
@@ -709,13 +731,13 @@ const areaFocus = (e)=>{
 	let v = e.target.value;
 	let b = window['currentEntities'][v]['boundingBox']
 	viewer.selectedEntity = window['currentEntities'][v]
-	//https://cesium.com/learn/cesiumjs/ref-doc/Camera.html
 	viewer.camera.flyTo({
-		// destination : Cesium.Rectangle.fromDegrees(west, south, east, north)
 		destination : Cesium.Rectangle.fromDegrees(b['W'],b['S'],b['E'],b['N'])
 	});
 }
+/*FUNCTIONS*/
 
+/*DOM*/
 $('.cesium-viewer-toolbar').append(`
 	<select class="cesium-button stateSelect" name="state" id="state">
 		<option disabled selected value="clear">State / Territory</option>
@@ -750,19 +772,12 @@ $('.cesium-viewer-toolbar').append(`
 		<option selected disabled value="clear">Select Locality</option>
 	</select>-->
 `)
+/*DOM*/
 
+/*BINDINGS*/
 $('.stateSelect').change(stateSelect);
-
 // $('.areaSelect').bind('change mouseover mouseout touchstart touchend',areaSelect);
 $('.areaSelect').change(areaSelect);
-
 $('.viewControl').click(viewControl);
 $('.areaFocus').change(areaFocus)
-
-
-// window['currentEntities'] = {};
-
-// const load = ()=>{
-// 	loadFederal('QLD')
-// }
-// setTimeout(load,500)
+/*BINDINGS*/
