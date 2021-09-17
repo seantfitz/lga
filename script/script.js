@@ -95,7 +95,7 @@ let selections = {
 
 /*FUNCTIONS*/
 viewer.trackedEntityChanged.addEventListener((e)=>{
-	console.log(e)
+	// console.log(e)
 })
 viewer.selectedEntityChanged.addEventListener((e)=>{
 
@@ -242,7 +242,7 @@ const decimalise = (val,dec)=>{
 }
 
 const listSelections = (a)=>{
-	// console.log(a)
+	console.log(a)
 	if(a === null || a == 'clear' || a == 'deselect'){
 		$('.areaSelect').prop('disabled',false);
 		$('.areaFocus').prop('disabled',true).val('clear');//
@@ -253,11 +253,15 @@ const listSelections = (a)=>{
 
 		switch(a){
 			case 'lgas': d = 'LGA'; break;
+			case 'stateDivisions':d = 'Electorate'; break;
 			case 'federal':d = 'Electorate'; break;
 			case 'zones':d = 'Zone'; break;
 		}
 
-		$('.areaFocus').html(`<option selected disabled value="clear" id="dynamicOption">Select ${d}</option>`)
+		$('.areaFocus').html(`
+			<option selected hidden value="clear" id="dynamicOption">Select ${d}</option>
+			<option value="deselect" id="clearAreaSelection">None</option>
+		`)
 		
 		for(let i in s){
 			$('.areaFocus').append(`<option value="${selections[a][s[i]]}">${toTitleCase(s[i])}</option>`)
@@ -488,7 +492,7 @@ let repNames = {}
 const appendStateDivisions = (o,state)=>{
 
 	let thisCol = 0;
-	console.log(o.length)
+	// console.log(o.length)
 	for(let i in o){
 
 		let NAME = o[i]['properties']['NAME']
@@ -532,7 +536,7 @@ const appendStateDivisions = (o,state)=>{
 		let midLon = (W + E) / 2
 
 		stateDivisions.entities.add({
-			name: NAME,
+			name: `State Electorate of ${toTitleCase(NAME)}`,
 			polygon: {
 				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
 				height : 0,
@@ -540,13 +544,13 @@ const appendStateDivisions = (o,state)=>{
 				outline : false,
 				outlineColor : Cesium.Color.BLACK,
 			},
-			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 1000),
+			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 5000),
 			label: {
 				text: wordWrap(NAME),
 				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
 				outlineWidth : 2,
 				fillColor: Cesium.Color.SKYBLUE,
-				scaleByDistance: new Cesium.NearFarScalar(50000, 1.5, 5000000, 0),
+				scaleByDistance: new Cesium.NearFarScalar(50000, 1.25, 5000000, 0.5),
 				translucencyByDistance: new Cesium.NearFarScalar(50000, 0, 100000, 1),
 				depthTestAgainstTerrain: false,
 			},
@@ -779,13 +783,14 @@ const stateSelect = (e)=>{
 
 	if(v === 'AUS'){
 		e.target.value = 'clear';
-		// $('.areaSelect, .areaFocus').prop('disabled',true)//.val('clear');
+		$('#clearStateSelection').html('None')
 		$('.areaSelect').prop('disabled',true);
 		$('.areaFocus').prop('disabled',true).val('clear');//
-		$('option[value="AUS"]').prop('disabled',true);
+		// $('option[value="AUS"]').prop('disabled',true);
 	}else{
 		loadZones(v);
-		$('option[value="AUS"]').prop('disabled',false);
+		// $('option[value="AUS"]').prop('disabled',false);
+		$('#clearStateSelection').html('Clear Selection')
 	}
 
 	viewer.camera.flyTo({
@@ -793,17 +798,7 @@ const stateSelect = (e)=>{
 	});
 }
 
-const viewControl = (e)=>{
-	let x = $(e.target)	
-	let menu = $('.localityFocus')
-	localities.show = !localities.show;
-	menu.prop('disabled',(!menu.prop('disabled')))
-	if(x.hasClass('layerOff')){
-		x.removeClass('layerOff')
-	}else{
-		x.addClass('layerOff')
-	}
-}
+
 let selectedArea = 'zones'
 const areaSelect = (e)=>{
 
@@ -875,6 +870,7 @@ const areaSelect = (e)=>{
 
 	switch(true){
 		case is_lgas: $('#dynamicOption').html('Select LGA'); break;
+		case is_stateDivisions: $('#dynamicOption').html('Select Electorate'); break;
 		case is_federal: $('#dynamicOption').html('Select Electorate'); break;
 		case is_zones: $('#dynamicOption').html('Select Zone'); break;
 		default: $('#dynamicOption').html('Select Division');
@@ -893,11 +889,34 @@ https://cesium.com/learn/cesiumjs/ref-doc/ImageryProvider.html
 
 const areaFocus = (e)=>{
 	let v = e.target.value;
-	let b = window['currentEntities'][v]['boundingBox']
-	viewer.selectedEntity = window['currentEntities'][v]
-	viewer.camera.flyTo({
-		destination : Cesium.Rectangle.fromDegrees(b['W'],b['S'],b['E'],b['N'])
-	});
+
+	if(v == 'deselect'){
+		e.target.value = 'clear';
+		$('#clearAreaSelection').html('None')
+
+		viewer.trackedEntity = undefined;
+		viewer.selectedEntity = undefined;
+	}else{
+		$('#clearAreaSelection').html('Clear Selection')
+	
+		let b = window['currentEntities'][v]['boundingBox']
+		viewer.selectedEntity = window['currentEntities'][v]
+		viewer.camera.flyTo({
+			destination : Cesium.Rectangle.fromDegrees(b['W'],b['S'],b['E'],b['N'])
+		});
+	}
+}
+
+const viewControl = (e)=>{
+	let x = $(e.target)	
+	let menu = $('.localityFocus')
+	localities.show = !localities.show;
+	menu.prop('disabled',(!menu.prop('disabled')))
+	if(x.hasClass('layerOff')){
+		x.removeClass('layerOff')
+	}else{
+		x.addClass('layerOff')
+	}
 }
 /*FUNCTIONS*/
 
@@ -910,9 +929,8 @@ $('.cesium-viewer-toolbar').append(`
 	</select>-->
 
 	<select class="cesium-button stateSelect" name="state" id="state">
-		<option disabled selected value="clear">State / Territory</option>
-		<!--<option selected hidden value="clear">State</option>-->
-		<option disabled value="AUS">Australia</option>
+		<option hidden selected value="clear">State / Territory</option>
+		<option value="AUS" id="clearStateSelection">None</option>
 		<option disabled value="NSW">New South Wales</option>
 		<option value="QLD">Queensland</option>
 		<option disabled value="VIC">Victoria</option>
@@ -934,7 +952,7 @@ $('.cesium-viewer-toolbar').append(`
 	</select>
 
 	<select disabled class="cesium-button areaFocus">
-		<option selected disabled value="clear" id="dynamicOption">Select Division</option>
+		<option selected hidden value="clear" id="dynamicOption">Select Division</option>
 	</select>
 
 	<button class="cesium-button viewControl localities layerOn" id="localities">Localities&nbsp;<span class="on">ON</span>&nbsp;<span class="off">OFF</span></button>
