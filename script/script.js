@@ -39,19 +39,20 @@ const viewer = new Cesium.Viewer('cesiumContainer', {
 	// mapMode2D: Cesium.MapMode2D.ROTATE,
 });
 
+let localities = new Cesium.CustomDataSource("localities")
 let lgas = new Cesium.CustomDataSource("lgas")
 let stateDivisions = new Cesium.CustomDataSource("stateDivisions")
 let federal = new Cesium.CustomDataSource("federal")
 let zones = new Cesium.CustomDataSource("zones")
 let broadcast = new Cesium.CustomDataSource("broadcast")
-let localities = new Cesium.CustomDataSource("localities")
 
+viewer.dataSources.add(localities);
 viewer.dataSources.add(lgas);
 viewer.dataSources.add(stateDivisions);
 viewer.dataSources.add(federal);
 viewer.dataSources.add(zones);
 viewer.dataSources.add(broadcast);
-viewer.dataSources.add(localities);
+
 
 //viewer.scene.globe.depthTestAgainstTerrain = true;//https://community.cesium.com/t/render-polygons-on-ground/7096//2109101041
 
@@ -223,7 +224,7 @@ const wordWrap = (str)=>{
 			out = `${aa}\n${b}`;
 		}
 	}else{
-		console.log(toTitleCase(str))
+		// console.log(toTitleCase(str))
 		return toTitleCase(str)
 	}
 
@@ -459,10 +460,11 @@ const appendLGAs = (o,state)=>{
 	// }
 }
 
-const loadZones = (state)=>{
-	let propName = `zones_${state}`
+/***/
+const loadStateDivisions = (state)=>{
+	let propName = `stateDivisions_${state}`
 	if(typeof(window[propName]) !== 'object'){
-		let info = fetch(`script/zones/${state}.json`,{
+		let info = fetch(`script/statedivisions/${state}.json`,{
 			method: 'get',
 			headers: {'Content-Type': 'application/json'}
 		})
@@ -475,26 +477,43 @@ const loadZones = (state)=>{
 			})
 		})
 		.then(() => {
-			appendZones(window[propName],state)
+			appendStateDivisions(window[propName],state)
 		})
 		.catch(err => console.error('Caught error: ', err))
 	}else{
-		appendZones(window[propName],state)
+		appendStateDivisions(window[propName],state)
 	}
 }
+let repNames = {}
+const appendStateDivisions = (o,state)=>{
 
-const appendZones = (o,state)=>{
-	// console.log(o.length)
+	let thisCol = 0;
+	console.log(o.length)
 	for(let i in o){
 
-		let zoneName = o[i]['properties']['id']
-		let population = o[i]['properties']['population']
-		let localities = o[i]['properties']['localities']
-		let colour = o[i]['properties']['colour']
+		let NAME = o[i]['properties']['NAME']
+		
+		/**/
+		// if(!repNames[NAME]){
+		// 	repNames[NAME] = 1
+		// }else{
+		// 	repNames[NAME] ++
+		// }
+		/**/
 
 		let coords = o[i]['geometry']['coordinates'][0]
 		let boundary = []
-		//WSEN
+		
+		let r = colours[thisCol][0] / 255
+		let g = colours[thisCol][1] / 255
+		let b = colours[thisCol][2] / 255
+		let colour = new Cesium.Color(r,g,b,0.25)
+
+		thisCol++;
+		if(thisCol >= colours.length - 1){
+			thisCol = 0;
+		}
+
 		let W = 180;//lower lon
 		let E = -180;//higher lon
 		let S = 90;//lower lat
@@ -512,35 +531,42 @@ const appendZones = (o,state)=>{
 		let midLat = (S + N) / 2
 		let midLon = (W + E) / 2
 
-		zones.entities.add({
-			name: zoneName,
+		stateDivisions.entities.add({
+			name: NAME,
 			polygon: {
 				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
 				height : 0,
-				material : Cesium.Color[colour].withAlpha(0.25),
+				material : colour,
 				outline : false,
 				outlineColor : Cesium.Color.BLACK,
 			},
-			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 250000),
+			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 1000),
 			label: {
-				text: zoneName.replace(' - ',`\n`),
+				text: wordWrap(NAME),
 				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
 				outlineWidth : 2,
 				fillColor: Cesium.Color.SKYBLUE,
-				scaleByDistance: new Cesium.NearFarScalar(50000, 2, 5000000, 0.5),
-				translucencyByDistance: new Cesium.NearFarScalar(10000, 0, 5000000, 1),
+				scaleByDistance: new Cesium.NearFarScalar(50000, 1.5, 5000000, 0),
+				translucencyByDistance: new Cesium.NearFarScalar(50000, 0, 100000, 1),
 				depthTestAgainstTerrain: false,
 			},
 			boundingBox: {W:W,E:E,S:S,N:N}
 		})
-		
-		let guid = zones['_entityCollection']['_entities']['_array'][i]['_id']
-		window['currentEntities'][guid] = zones['_entityCollection']['_entities']['_array'][i]
-		selections['zones'][zoneName] = guid
+
+		let guid = stateDivisions['_entityCollection']['_entities']['_array'][i]['_id']
+		window['currentEntities'][guid] = stateDivisions['_entityCollection']['_entities']['_array'][i]
+		selections['stateDivisions'][NAME] = guid
 	}
 	loadLGAs(state)
-	// console.log(o)
+	// console.log(JSON.stringify(repNames))
+	// let k = Object.keys(repNames)
+	// for(let i in k){
+	// 	if(repNames[k[i]] > 1){
+	// 		console.log(k[i],repNames[k[i]])
+	// 	}
+	// }
 }
+/***/
 
 const loadFederal = (state)=>{
 	let propName = `federal_${state}`
@@ -639,11 +665,98 @@ const appendFederal = (o,state)=>{
 		window['currentEntities'][guid] = federal['_entityCollection']['_entities']['_array'][i]
 		selections['federal'][Elect_div] = guid
 	}
-	loadZones(state)
+	loadStateDivisions(state)
 	// console.log(o)
 	// console.log(viewer.dataSourceDisplay.ready)
 }
+
+const loadZones = (state)=>{
+	let propName = `zones_${state}`
+	if(typeof(window[propName]) !== 'object'){
+		let info = fetch(`script/zones/${state}.json`,{
+			method: 'get',
+			headers: {'Content-Type': 'application/json'}
+		})
+		.then((response) => response.json())
+		.then((response) => {
+			Object.defineProperty(window, propName, {
+				value: response['features'],
+				configurable: false,
+				writable: false
+			})
+		})
+		.then(() => {
+			appendZones(window[propName],state)
+		})
+		.catch(err => console.error('Caught error: ', err))
+	}else{
+		appendZones(window[propName],state)
+	}
+}
+
+const appendZones = (o,state)=>{
+	// console.log(o.length)
+	for(let i in o){
+
+		let zoneName = o[i]['properties']['id']
+		let population = o[i]['properties']['population']
+		let localities = o[i]['properties']['localities']
+		let colour = o[i]['properties']['colour']
+
+		let coords = o[i]['geometry']['coordinates'][0]
+		let boundary = []
+		//WSEN
+		let W = 180;//lower lon
+		let E = -180;//higher lon
+		let S = 90;//lower lat
+		let N = -90;//higher lat
+
+		for(let i in coords){
+			boundary.push(coords[i][0],coords[i][1])
+
+			if(coords[i][0] < W){W = coords[i][0]}
+			if(coords[i][0] > E){E = coords[i][0]}
+			if(coords[i][1] < S){S = coords[i][1]}
+			if(coords[i][1] > N){N = coords[i][1]}
+		}
+
+		let midLat = (S + N) / 2
+		let midLon = (W + E) / 2
+
+		zones.entities.add({
+			name: zoneName,
+			polygon: {
+				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
+				height : 0,
+				material : Cesium.Color[colour].withAlpha(0.25),
+				outline : false,
+				outlineColor : Cesium.Color.BLACK,
+			},
+			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 250000),
+			label: {
+				text: zoneName.replace(' - ',`\n`),
+				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+				outlineWidth : 2,
+				fillColor: Cesium.Color.SKYBLUE,
+				scaleByDistance: new Cesium.NearFarScalar(50000, 2, 5000000, 0.5),
+				translucencyByDistance: new Cesium.NearFarScalar(10000, 0, 5000000, 1),
+				depthTestAgainstTerrain: false,
+			},
+			boundingBox: {W:W,E:E,S:S,N:N}
+		})
+		
+		let guid = zones['_entityCollection']['_entities']['_array'][i]['_id']
+		window['currentEntities'][guid] = zones['_entityCollection']['_entities']['_array'][i]
+		selections['zones'][zoneName] = guid
+	}
+	loadFederal(state)
+	// console.log(o)
+}
 /*ENTITY FUNCTIONS*/
+
+const baseSelect = (e)=>{
+	console.log(viewer.imageryLayers)
+}
 
 const stateSelect = (e)=>{
 	
@@ -671,7 +784,7 @@ const stateSelect = (e)=>{
 		$('.areaFocus').prop('disabled',true).val('clear');//
 		$('option[value="AUS"]').prop('disabled',true);
 	}else{
-		loadFederal(v);
+		loadZones(v);
 		$('option[value="AUS"]').prop('disabled',false);
 	}
 
@@ -790,6 +903,12 @@ const areaFocus = (e)=>{
 
 /*DOM*/
 $('.cesium-viewer-toolbar').append(`
+
+	<!--<select class="cesium-button baseSelect">
+		<option value="1">Simple Map</option>
+		<option value="2">Satellite</option>
+	</select>-->
+
 	<select class="cesium-button stateSelect" name="state" id="state">
 		<option disabled selected value="clear">State / Territory</option>
 		<!--<option selected hidden value="clear">State</option>-->
@@ -808,7 +927,7 @@ $('.cesium-viewer-toolbar').append(`
 		<option selected hidden value="clear">Division Type</option>
 		<option value="deselect" id="clearDivisionSelection">None</option>
 		<option value="lgas">LGAs</option>
-		<option hidden value="stateDivisions">State Electorates</option>
+		<option value="stateDivisions">State Electorates</option>
 		<option value="federal">Federal Electorates</option>
 		<option value="zones">News Coverage Zones</option>
 		<option hidden value="broadcast">Aggregated Broadcast Markets</option>
@@ -827,6 +946,7 @@ $('.cesium-viewer-toolbar').append(`
 /*DOM*/
 
 /*BINDINGS*/
+$('.baseSelect').change(baseSelect);
 $('.stateSelect').change(stateSelect);
 // $('.areaSelect').bind('change mouseover mouseout touchstart touchend',areaSelect);
 $('.areaSelect').change(areaSelect);
