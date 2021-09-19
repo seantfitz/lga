@@ -297,7 +297,7 @@ const loadLocalities = (state)=>{
 };
 
 const appendLocalities = (o,state)=>{
-	console.log(o.length)
+	// console.log(o.length)
 	for(let i in o){
 		let description = `Population: ${numberWithCommas(o[i]['population'])}`
 		let colour = Cesium.Color.GREEN;
