@@ -242,7 +242,7 @@ const decimalise = (val,dec)=>{
 }
 
 const listSelections = (a)=>{
-	console.log(a)
+	// console.log(a)
 	if(a === null || a == 'clear' || a == 'deselect'){
 		$('.areaSelect').prop('disabled',false);
 		$('.areaFocus').prop('disabled',true).val('clear');//
@@ -297,7 +297,7 @@ const loadLocalities = (state)=>{
 };
 
 const appendLocalities = (o,state)=>{
-	// console.log(o.length)
+	console.log(o.length)
 	for(let i in o){
 		let description = `Population: ${numberWithCommas(o[i]['population'])}`
 		let colour = Cesium.Color.GREEN;
@@ -319,9 +319,7 @@ const appendLocalities = (o,state)=>{
 			description: description,
 			position: Cesium.Cartesian3.fromDegrees(o[i]['long'], o[i]['lat'],500),
 			point: {
-				// pixelSize : 5,
 				pixelSize : pixelSize,
-				// color : Cesium.Color.RED,
 				color : colour,
 				outlineColor : Cesium.Color.WHITE,
 				outlineWidth : 2,
@@ -330,8 +328,10 @@ const appendLocalities = (o,state)=>{
 			},
 			label: {
 				text: o[i]['locality'],
-				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-				outlineWidth : 2,
+				// style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+				// style: Cesium.LabelStyle.FILL,
+				// outlineWidth : 0,
+				fillColor: Cesium.Color.BLACK,
 				verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
 				pixelOffset : new Cesium.Cartesian2(0, -9),
 				scaleByDistance: new Cesium.NearFarScalar(50000, 1, 5000000, 0),
@@ -440,9 +440,9 @@ const appendLGAs = (o,state)=>{
 			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 1000),
 			label: {
 				text: wordWrap(LGA_NAME),
-				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-				outlineWidth : 2,
-				fillColor: Cesium.Color.SKYBLUE,
+				// style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+				// outlineWidth : 2,
+				fillColor: Cesium.Color.BLUE,
 				scaleByDistance: new Cesium.NearFarScalar(50000, 1.5, 5000000, 0),
 				translucencyByDistance: new Cesium.NearFarScalar(50000, 0, 100000, 1),
 				depthTestAgainstTerrain: false,
@@ -547,9 +547,9 @@ const appendStateDivisions = (o,state)=>{
 			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 5000),
 			label: {
 				text: wordWrap(NAME),
-				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-				outlineWidth : 2,
-				fillColor: Cesium.Color.SKYBLUE,
+				// style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+				// outlineWidth : 2,
+				fillColor: Cesium.Color.BLUE,
 				scaleByDistance: new Cesium.NearFarScalar(50000, 1.25, 5000000, 0.5),
 				translucencyByDistance: new Cesium.NearFarScalar(50000, 0, 100000, 1),
 				depthTestAgainstTerrain: false,
@@ -655,9 +655,9 @@ const appendFederal = (o,state)=>{
 			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 5000),
 			label: {
 				text: Elect_div,
-				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-				outlineWidth : 2,
-				fillColor: Cesium.Color.SKYBLUE,
+				// style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+				// outlineWidth : 2,
+				fillColor: Cesium.Color.BLUE,
 				scaleByDistance: new Cesium.NearFarScalar(50000, 1.25, 5000000, 0.5),
 				translucencyByDistance: new Cesium.NearFarScalar(50000, 0, 100000, 1),
 				depthTestAgainstTerrain: false,
@@ -739,9 +739,9 @@ const appendZones = (o,state)=>{
 			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 250000),
 			label: {
 				text: zoneName.replace(' - ',`\n`),
-				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-				outlineWidth : 2,
-				fillColor: Cesium.Color.SKYBLUE,
+				// style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+				// outlineWidth : 2,
+				fillColor: Cesium.Color.BLUE,
 				scaleByDistance: new Cesium.NearFarScalar(50000, 2, 5000000, 0.5),
 				translucencyByDistance: new Cesium.NearFarScalar(10000, 0, 5000000, 1),
 				depthTestAgainstTerrain: false,
