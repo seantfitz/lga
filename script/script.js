@@ -1,3 +1,159 @@
+/**/
+let mp = [
+["Hon. Anthony Albanese","Labor","Grayndler","NSW","1996–present","Division_of_Grayndler"],
+["John Alexander OAM","Liberal","Bennelong","NSW","2010–2017;2017–present","Division_of_Bennelong"],
+["Katie Allen","Liberal","Higgins","VIC","2019–present","Division_of_Higgins"],
+["Anne Aly","Labor","Cowan","WA","2016–present","Division_of_Cowan"],
+["Hon. Karen Andrews","Liberal National","McPherson","QLD","2010–present","Division_of_McPherson"],
+["Hon. Kevin Andrews","Liberal","Menzies","VIC","1991–present","Division_of_Menzies"],
+["Bridget Archer","Liberal","Bass","TAS","2019–present","Division_of_Bass"],
+["Adam Bandt","Greens","Melbourne","VIC","2010–present","Division_of_Melbourne"],
+["Angie Bell","Liberal National","Moncrieff","QLD","2019–present","Division_of_Moncrieff"],
+["Hon. Sharon Bird","Labor","Cunningham","NSW","2004–present","Division_of_Cunningham"],
+["Hon. Chris Bowen","Labor","McMahon","NSW","2004–present","Division_of_McMahon"],
+["Russell Broadbent","Liberal","Monash","VIC","1990–1993;1996–1998;2004–present","Division_of_Monash"],
+["Hon. Scott Buchholz","Liberal National","Wright","QLD","2010–present","Division_of_Wright"],
+["Hon. Tony Burke","Labor","Watson","NSW","2004–present","Division_of_Watson"],
+["Hon. Linda Burney","Labor","Barton","NSW","2016–present","Division_of_Barton"],
+["Josh Burns","Labor","Macnamara","VIC","2019–present","Division_of_Macnamara"],
+["Hon. Mark Butler","Labor","Hindmarsh","SA","2007–present","Division_of_Hindmarsh"],
+["Terri Butler","Labor","Griffith","QLD","2014–present","Division_of_Griffith"],
+["Hon. Anthony Byrne","Labor","Holt","VIC","1999–present","Division_of_Holt"],
+["Jim Chalmers","Labor","Rankin","QLD","2013–present","Division_of_Rankin"],
+["Nick Champion","Labor","Spence","SA","2007–present","Division_of_Spence"],
+["Hon. Darren Chester","National","Gippsland","VIC","2008–present","Division_of_Gippsland"],
+["Lisa Chesters","Labor","Bendigo","VIC","2013–present","Division_of_Bendigo"],
+["George Christensen","Liberal National","Dawson","QLD","2010–present","Division_of_Dawson"],
+["Hon. Jason Clare","Labor","Blaxland","NSW","2007–present","Division_of_Blaxland"],
+["Sharon Claydon","Labor","Newcastle","NSW","2013–present","Division_of_Newcastle"],
+["Libby Coker","Labor","Corangamite","VIC","2019–present","Division_of_Corangamite"],
+["Hon. David Coleman","Liberal","Banks","NSW","2013–present","Division_of_Banks"],
+["Hon. Julie Collins","Labor","Franklin","TAS","2007–present","Division_of_Franklin"],
+["Pat Conaghan","National","Cowper","NSW","2019–present","Division_of_Cowper"],
+["Vince Connelly","Liberal","Stirling","WA","2019–present","Division_of_Stirling"],
+["Pat Conroy","Labor","Shortland","NSW","2013–present","Division_of_Shortland"],
+["Hon. Mark Coulton","National","Parkes","NSW","2007–present","Division_of_Parkes"],
+["Milton Dick","Labor","Oxley","QLD","2016–present","Division_of_Oxley"],
+["Hon. Mark Dreyfus QC","Labor","Isaacs","VIC","2007–present","Division_of_Isaacs"],
+["Hon. Damian Drum","National","Nicholls","VIC","2016–present","Division_of_Nicholls"],
+["Hon. Peter Dutton","Liberal National","Dickson","QLD","2001–present","Division_of_Dickson"],
+["Hon. Justine Elliot","Labor","Richmond","NSW","2004–present","Division_of_Richmond"],
+["Hon. Warren Entsch","Liberal National","Leichhardt","QLD","1996–2007;2010–present","Division_of_Leichhardt"],
+["Hon. Trevor Evans","Liberal National","Brisbane","QLD","2016–present","Division_of_Brisbane"],
+["Jason Falinski","Liberal","Mackellar","NSW","2016–present","Division_of_Mackellar"],
+["Hon. Joel Fitzgibbon","Labor","Hunter","NSW","1996–present","Division_of_Hunter"],
+["Hon. Paul Fletcher","Liberal","Bradfield","NSW","2009–present","Division_of_Bradfield"],
+["Nicolle Flint","Liberal","Boothby","SA","2016–present","Division_of_Boothby"],
+["Mike Freelander","Labor","Macarthur","NSW","2016–present","Division_of_Macarthur"],
+["Hon. Josh Frydenberg","Liberal","Kooyong","VIC","2010–present","Division_of_Kooyong"],
+["Andrew Gee","National","Calare","NSW","2016–present","Division_of_Calare"],
+["Steve Georganas","Labor","Adelaide","SA","2004–2013;2016–present","Division_of_Adelaide"],
+["Andrew Giles","Labor","Scullin","VIC","2013–present","Division_of_Scullin"],
+["David Gillespie","National","Lyne","NSW","2013–present","Division_of_Lyne"],
+["Ian Goodenough","Liberal","Moore","WA","2013–present","Division_of_Moore"],
+["Patrick Gorman","Labor","Perth","WA","2018–present","Division_of_Perth"],
+["Luke Gosling OAM","Labor","Solomon","NT","2016–present","Division_of_Solomon"],
+["Helen Haines","Independent","Indi","VIC","2019–present","Division_of_Indi"],
+["Garth Hamilton","Liberal National","Groom","QLD","2020–present","Division_of_Groom"],
+["Celia Hammond","Liberal","Curtin","WA","2019–present","Division_of_Curtin"],
+["Andrew Hastie","Liberal","Canning","WA","2015–present","Division_of_Canning"],
+["Hon. Alex Hawke","Liberal","Mitchell","NSW","2007–present","Division_of_Mitchell"],
+["Chris Hayes","Labor","Fowler","NSW","2005–present","Division_of_Fowler"],
+["Julian Hill","Labor","Bruce","VIC","2016–present","Division_of_Bruce"],
+["Kevin Hogan","National","Page","NSW","2013–present","Division_of_Page"],
+["Hon. Luke Howarth","Liberal National","Petrie","QLD","2013–present","Division_of_Petrie"],
+["Hon. Greg Hunt","Liberal","Flinders","VIC","2001–present","Division_of_Flinders"],
+["Hon. Ed Husic","Labor","Chifley","NSW","2010–present","Division_of_Chifley"],
+["Hon. Steve Irons","Liberal","Swan","WA","2007–present","Division_of_Swan"],
+["Stephen Jones","Labor","Whitlam","NSW","2010–present","Division_of_Whitlam"],
+["Hon. Barnaby Joyce","National","New England","NSW","2013–2017;2017–present","Division_of_New_England"],
+["Hon. Bob Katter","Katter's Australian","Kennedy","QLD","1993–present","Division_of_Kennedy"],
+["Ged Kearney","Labor","Cooper","VIC","2018–present","Division_of_Cooper"],
+["Craig Kelly","Independent","Hughes","NSW","2010–present","Division_of_Hughes"],
+["Matt Keogh","Labor","Burt","WA","2016–present","Division_of_Burt"],
+["Peter Khalil","Labor","Wills","VIC","2016–present","Division_of_Wills"],
+["Hon. Catherine King","Labor","Ballarat","VIC","2001–present","Division_of_Ballarat"],
+["Madeleine King","Labor","Brand","WA","2016–present","Division_of_Brand"],
+["Andrew Laming","Liberal National","Bowman","QLD","2004–present","Division_of_Bowman"],
+["Hon. Michelle Landry","Liberal National","Capricornia","QLD","2013–present","Division_of_Capricornia"],
+["Julian Leeser","Liberal","Berowra","NSW","2016–present","Division_of_Berowra"],
+["Hon. Andrew Leigh","Labor","Fenner","ACT","2010–present","Division_of_Fenner"],
+["Hon. Sussan Ley","Liberal","Farrer","NSW","2001–present","Division_of_Farrer"],
+["Hon. David Littleproud","Liberal National","Maranoa","QLD","2016–present","Division_of_Maranoa"],
+["Gladys Liu","Liberal","Chisholm","VIC","2019–present","Division_of_Chisholm"],
+["Hon. Nola Marino","Liberal","Forrest","WA","2007–present","Division_of_Forrest"],
+["Hon. Richard Marles","Labor","Corio","VIC","2007–present","Division_of_Corio"],
+["Fiona Martin","Liberal","Reid","NSW","2019–present","Division_of_Reid"],
+["Kristy McBain","Labor","Eden-Monaro","NSW","2020–present","Division_of_Eden-Monaro"],
+["Emma McBride","Labor","Dobell","NSW","2016–present","Division_of_Dobell"],
+["Hon. Michael McCormack","National","Riverina","NSW","2010–present","Division_of_Riverina"],
+["Melissa McIntosh","Liberal","Lindsay","NSW","2019–present","Division_of_Lindsay"],
+["Brian Mitchell","Labor","Lyons","TAS","2016–present","Division_of_Lyons"],
+["Rob Mitchell","Labor","McEwen","VIC","2010–present","Division_of_McEwen"],
+["Hon. Scott Morrison","Liberal","Cook","NSW","2007–present","Division_of_Cook"],
+["Hon. Ben Morton","Liberal","Tangney","WA","2016–present","Division_of_Tangney"],
+["Daniel Mulino","Labor","Fraser","VIC","2019–present","Division_of_Fraser_(Victoria)"],
+["Peta Murphy","Labor","Dunkley","VIC","2019–present","Division_of_Dunkley"],
+["Hon. Shayne Neumann","Labor","Blair","QLD","2007–present","Division_of_Blair"],
+["Llew O'Brien","Liberal National","Wide Bay","QLD","2016–present","Division_of_Wide_Bay"],
+["Ted O'Brien","Liberal National","Fairfax","QLD","2016–present","Division_of_Fairfax"],
+["Hon. Brendan O'Connor","Labor","Gorton","VIC","2001–present","Division_of_Gorton"],
+["Ken O'Dowd","Liberal National","Flynn","QLD","2010–present","Division_of_Flynn"],
+["Clare O'Neil","Labor","Hotham","VIC","2013–present","Division_of_Hotham"],
+["Julie Owens","Labor","Parramatta","NSW","2004–present","Division_of_Parramatta"],
+["Tony Pasin","Liberal","Barker","SA","2013–present","Division_of_Barker"],
+["Alicia Payne","Labor","Canberra","ACT","2019–present","Division_of_Canberra"],
+["Gavin Pearce","Liberal","Braddon","TAS","2019–present","Division_of_Braddon"],
+["Graham Perrett","Labor","Moreton","QLD","2007–present","Division_of_Moreton"],
+["Fiona Phillips","Labor","Gilmore","NSW","2019–present","Division_of_Gilmore"],
+["Hon. Keith Pitt","Liberal National","Hinkler","QLD","2013–present","Division_of_Hinkler"],
+["Hon. Tanya Plibersek","Labor","Sydney","NSW","1998–present","Division_of_Sydney"],
+["Hon. Christian Porter","Liberal","Pearce","WA","2013–present","Division_of_Pearce"],
+["Hon. Melissa Price","Liberal","Durack","WA","2013–present","Division_of_Durack"],
+["Rowan Ramsey","Liberal","Grey","SA","2007–present","Division_of_Grey"],
+["Hon. Amanda Rishworth","Labor","Kingston","SA","2007–present","Division_of_Kingston"],
+["Hon. Stuart Robert","Liberal National","Fadden","QLD","2007–present","Division_of_Fadden"],
+["Michelle Rowland","Labor","Greenway","NSW","2010–present","Division_of_Greenway"],
+["Joanne Ryan","Labor","Lalor","VIC","2013–present","Division_of_Lalor"],
+["Rebekha Sharkie","Centre Alliance","Mayo","SA","2016–2018;2018–present","Division_of_Mayo"],
+["Dave Sharma","Liberal","Wentworth","NSW","2019–present","Division_of_Wentworth"],
+["Hon. Bill Shorten","Labor","Maribyrnong","VIC","2007–present","Division_of_Maribyrnong"],
+["Julian Simmonds","Liberal National","Ryan","QLD","2019–present","Division_of_Ryan"],
+["David Smith","Labor","Bean","ACT","2019–present","Division_of_Bean"],
+["Hon. Tony Smith","Liberal","Casey","VIC","2001–present","Division_of_Casey"],
+["Hon. Warren Snowdon","Labor","Lingiari","NT","1987–1996;1998–present","Division_of_Lingiari"],
+["Anne Stanley","Labor","Werriwa","NSW","2016–present","Division_of_Werriwa"],
+["Zali Steggall OAM","Independent","Warringah","NSW","2019–present","Division_of_Warringah"],
+["James Stevens","Liberal","Sturt","SA","2019–present","Division_of_Sturt"],
+["Michael Sukkar","Liberal","Deakin","VIC","2013–present","Division_of_Deakin"],
+["Meryl Swanson","Labor","Paterson","NSW","2016–present","Division_of_Paterson"],
+["Hon. Angus Taylor","Liberal","Hume","NSW","2013–present","Division_of_Hume"],
+["Hon. Dan Tehan","Liberal","Wannon","VIC","2010–present","Division_of_Wannon"],
+["Susan Templeman","Labor","Macquarie","NSW","2016–present","Division_of_Macquarie"],
+["Hon. Matt Thistlethwaite","Labor","Kingsford Smith","NSW","2013–present","Division_of_Kingsford_Smith"],
+["Phillip Thompson OAM","Liberal National","Herbert","QLD","2019–present","Division_of_Herbert"],
+["Kate Thwaites","Labor","Jagajaga","VIC","2019–present","Division_of_Jagajaga"],
+["Hon. Alan Tudge","Liberal","Aston","VIC","2010–present","Division_of_Aston"],
+["Maria Vamvakinou","Labor","Calwell","VIC","2001–present","Division_of_Calwell"],
+["Bert van Manen","Liberal National","Forde","QLD","2010–present","Division_of_Forde"],
+["Ross Vasta","Liberal National","Bonner","QLD","2004–2007;2010–present","Division_of_Bonner"],
+["Andrew Wallace","Liberal National","Fisher","QLD","2016–present","Division_of_Fisher"],
+["Tim Watts","Labor","Gellibrand","VIC","2013–present","Division_of_Gellibrand"],
+["Anne Webster","National","Mallee","VIC","2019–present","Division_of_Mallee"],
+["Anika Wells","Labor","Lilley","QLD","2019–present","Division_of_Lilley"],
+["Lucy Wicks","Liberal","Robertson","NSW","2013–present","Division_of_Robertson"],
+["Andrew Wilkie","Independent","Clark","TAS","2010–present","Division_of_Clark"],
+["Josh Wilson","Labor","Fremantle","WA","2016–2018;2018–present","Division_of_Fremantle"],
+["Rick Wilson","Liberal","O'Connor","WA","2013–present","Division_of_O%27Connor"],
+["Tim Wilson","Liberal","Goldstein","VIC","2016–present","Division_of_Goldstein"],
+["Hon. Jason Wood","Liberal","La Trobe","VIC","2004–2010;2013–present","Division_of_La_Trobe"],
+["Hon. Ken Wyatt AM","Liberal","Hasluck","WA","2010–present","Division_of_Hasluck"],
+["Terry Young","Liberal National","Longman","QLD","2019–present","Division_of_Longman"],
+["Tony Zappia","Labor","Makin","SA","2007–present","Division_of_Makin"],
+["Trent Zimmerman","Liberal","North Sydney","NSW","2015–present","Division_of_North_Sydney"]
+]
+/**/
+
 /*MAP SETUP*/
 //Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxY2JiMDhjMS1jODcyLTQxYWQtYmJiOC1hNTUyNDE0Zjg2N2YiLCJpZCI6NjQ3MDIsImlhdCI6MTYyOTQyMjY0OX0.XrBfYMVmvrlNeNuAdbcCyVHJ44KMq_yCGptHtZ1F9VY';
 const extent = Cesium.Rectangle.fromDegrees(112.921124550164,-43.7429686004967,153.660861,-9.14118954253052);//(W,S,E,N)
@@ -612,8 +768,37 @@ const appendFederal = (o,state)=>{
 		let Area_SqKm = o[i]['properties']['Area_SqKm']
 		let Sortname = o[i]['properties']['Sortname']
 		let coords = o[i]['geometry']['coordinates'][0]
-		let description = `Area:&nbsp;${decimalise(Area_SqKm,2)}&nbsp;km<sup>2</sup>`
+		// let description = `Area:&nbsp;${decimalise(Area_SqKm,2)}&nbsp;km<sup>2</sup>`
+		
+		/*************/
+		let mp = o[i]['properties']['mp']
+		let party = o[i]['properties']['party']
+		let tenure = o[i]['properties']['tenure']
+		let wiki = o[i]['properties']['wiki']
+
+		let description = `
+		<!--Actual:&nbsp;${Actual}<br>-->
+		Area:&nbsp;${decimalise(Area_SqKm,2)}&nbsp;km<sup>2</sup><br>
+		Member:&nbsp;${mp} - ${party}<br>
+		Wiki:&nbsp;<a href="https://en.wikipedia.org/wiki/${wiki}" target="_blank">${Elect_div}</a>
+		`
+		/*************/
+
+		
 		let boundary = []
+
+		/************/
+		// let thisNode = o[i]
+		// for(let i in mp){
+		// 	if(Elect_div == mp[i][2]){
+		// 		thisNode['properties']['mp'] = mp[i][0]
+		// 		thisNode['properties']['party'] = mp[i][1]
+		// 		thisNode['properties']['tenure'] = mp[i][4]
+		// 		thisNode['properties']['wiki'] = mp[i][5]
+		// 		break;
+		// 	}
+		// }
+		/************/
 
 		let r = colours[thisCol][0] / 255
 		let g = colours[thisCol][1] / 255
@@ -671,6 +856,7 @@ const appendFederal = (o,state)=>{
 	}
 	loadStateDivisions(state)
 	// console.log(o)
+	// console.log(JSON.stringify(o))
 	// console.log(viewer.dataSourceDisplay.ready)
 }
 
