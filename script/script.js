@@ -756,6 +756,92 @@ const appendZones = (o,state)=>{
 	loadFederal(state)
 	// console.log(o)
 }
+
+const loadBroadcast = (state)=>{
+	let propName = `broadcast_${state}`
+	if(typeof(window[propName]) !== 'object'){
+		let info = fetch(`script/broadcast/${state}.json`,{
+			method: 'get',
+			headers: {'Content-Type': 'application/json'}
+		})
+		.then((response) => response.json())
+		.then((response) => {
+			Object.defineProperty(window, propName, {
+				value: response['features'],
+				configurable: false,
+				writable: false
+			})
+		})
+		.then(() => {
+			appendBroadcast(window[propName],state)
+		})
+		.catch(err => console.error('Caught error: ', err))
+	}else{
+		appendBroadcast(window[propName],state)
+	}
+}
+
+const appendBroadcast = (o,state)=>{
+	// console.log(o.length)
+	for(let i in o){
+
+		let id = o[i]['properties']['id']
+		let people = o[i]['properties']['people']
+		let households = o[i]['properties']['households']
+		let colour = o[i]['properties']['colour']
+
+		let description = `People:&nbsp;${numberWithCommas(people)}<br>Households:&nbsp;${numberWithCommas(households)}`
+
+		let coords = o[i]['geometry']['coordinates'][0]
+		let boundary = []
+		//WSEN
+		let W = 180;//lower lon
+		let E = -180;//higher lon
+		let S = 90;//lower lat
+		let N = -90;//higher lat
+
+		for(let i in coords){
+			boundary.push(coords[i][0],coords[i][1])
+
+			if(coords[i][0] < W){W = coords[i][0]}
+			if(coords[i][0] > E){E = coords[i][0]}
+			if(coords[i][1] < S){S = coords[i][1]}
+			if(coords[i][1] > N){N = coords[i][1]}
+		}
+
+		let midLat = (S + N) / 2
+		let midLon = (W + E) / 2
+
+		broadcast.entities.add({
+			name: id,
+			description: description,
+			polygon: {
+				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
+				height : 0,
+				material : Cesium.Color[colour].withAlpha(0.25),
+				outline : false,
+				outlineColor : Cesium.Color.BLACK,
+			},
+			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 250000),
+			label: {
+				text: id.replace(' - ',`\n`),
+				// style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+				// outlineWidth : 2,
+				fillColor: Cesium.Color.BLUE,
+				scaleByDistance: new Cesium.NearFarScalar(50000, 2, 5000000, 0.5),
+				translucencyByDistance: new Cesium.NearFarScalar(10000, 0, 5000000, 1),
+				depthTestAgainstTerrain: false,
+			},
+			boundingBox: {W:W,E:E,S:S,N:N}
+		})
+		
+		let guid = broadcast['_entityCollection']['_entities']['_array'][i]['_id']
+		window['currentEntities'][guid] = broadcast['_entityCollection']['_entities']['_array'][i]
+		selections['broadcast'][id] = guid
+	}
+	loadZones(state)
+	// console.log(o)
+}
 /*ENTITY FUNCTIONS*/
 
 const baseSelect = (e)=>{
@@ -788,7 +874,8 @@ const stateSelect = (e)=>{
 		$('.areaFocus').prop('disabled',true).val('clear');//
 		// $('option[value="AUS"]').prop('disabled',true);
 	}else{
-		loadZones(v);
+		// loadZones(v);
+		loadBroadcast(v);
 		// $('option[value="AUS"]').prop('disabled',false);
 		$('#clearStateSelection').html('Clear Selection')
 	}
@@ -799,80 +886,42 @@ const stateSelect = (e)=>{
 }
 
 
-let selectedArea = 'zones'
 const areaSelect = (e)=>{
 
-	// let t = e.type;
-
-	// let change = t == 'change'
-	// let mouseover = t =='mouseover'
-	// let mouseout = t =='mouseout'
-	// let touchstart = t =='touchstart'
-	// let touchend = t =='touchend'
-
 	let v = e.target.value;
-
-	// let isLGA = v == 'lgas'
-	// let isState = v == 'state'
-	// let isFederal = v == 'federal'
-	// let isZone = v == 'zones'
-	// let isBroadcast = v == 'broadcast'
-
 	let is_lgas = v == 'lgas'
 	let is_stateDivisions = v == 'stateDivisions'
 	let is_federal = v == 'federal'
 	let is_zones = v == 'zones'
 	let is_broadcast = v == 'broadcast'
-
-	// switch(true){
-
-	// 	case change:
+	
+	if(v == 'deselect'){
+		e.target.value = 'clear';
+		$('#clearDivisionSelection').html('None')
+	}else{
+		$('#clearDivisionSelection').html('Clear Selection')
+	}
 		
-		if(v == 'deselect'){
-			e.target.value = 'clear';
-			$('#clearDivisionSelection').html('None')
-		}else{
-			$('#clearDivisionSelection').html('Clear Selection')
-		}
-		
-		lgas.show = is_lgas;
-		stateDivisions.show = is_stateDivisions;
-		federal.show = is_federal;
-		zones.show = is_zones;
-		broadcast.show = is_broadcast;
-		
-		selectedArea = v;
-		// e.target.value = 'clear';
+	lgas.show = is_lgas;
+	stateDivisions.show = is_stateDivisions;
+	federal.show = is_federal;
+	zones.show = is_zones;
+	broadcast.show = is_broadcast;		
+	viewer.selectedEntity = undefined;
 
-		viewer.selectedEntity = undefined;
+	listSelections(v);
 
-		listSelections(v);
-
-		let b = stateBox[$('.stateSelect').val()];
-		viewer.camera.flyTo({
-			destination : Cesium.Rectangle.fromDegrees(b[0],b[1],b[2],b[3])
-		});
-
-		
-		
-	// 	break;
-
-	// 	case touchend:
-	// 	case mouseout:
-	// 	// e.target.value = 'clear';
-	// 	break;
-
-	// 	case touchstart:
-	// 	case mouseover:
-	// 	// e.target.value = selectedArea;
-	// 	break;
-	// }
+	let b = stateBox[$('.stateSelect').val()];
+	viewer.camera.flyTo({
+		destination : Cesium.Rectangle.fromDegrees(b[0],b[1],b[2],b[3])
+	});
 
 	switch(true){
 		case is_lgas: $('#dynamicOption').html('Select LGA'); break;
 		case is_stateDivisions: $('#dynamicOption').html('Select Electorate'); break;
 		case is_federal: $('#dynamicOption').html('Select Electorate'); break;
 		case is_zones: $('#dynamicOption').html('Select Zone'); break;
+		case is_broadcast: $('#dynamicOption').html('Select Market'); break;
 		default: $('#dynamicOption').html('Select Division');
 	}
 }
@@ -948,7 +997,7 @@ $('.cesium-viewer-toolbar').append(`
 		<option value="stateDivisions">State Electorates</option>
 		<option value="federal">Federal Electorates</option>
 		<option value="zones">News Coverage Zones</option>
-		<option hidden value="broadcast">Aggregated Broadcast Markets</option>
+		<option value="broadcast">Aggregated Broadcast Markets</option>
 	</select>
 
 	<select disabled class="cesium-button areaFocus">
