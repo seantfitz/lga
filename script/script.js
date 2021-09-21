@@ -1,4 +1,4 @@
-/** * * **/
+/**/
 let mp = [
 ["Hon. Anthony Albanese","Labor","Grayndler","NSW","1996–present","Division_of_Grayndler"],
 ["John Alexander OAM","Liberal","Bennelong","NSW","2010–2017;2017–present","Division_of_Bennelong"],
