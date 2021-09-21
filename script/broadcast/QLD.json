@@ -9,7 +9,13 @@
 			"id":"Cairns",
 			"people":257300,
 			"households":112800,
-			"fta":[],
+			"fta":[
+				["7QLD, 7TWO, 7mate, 7flix","7"],
+				["SCA Nine, GO!, Gem, 9Life","9"],
+				["WIN, ONE, ELEVEN","10"],
+				["ABC, ABC2, ABCME, ABC News 24","ABC"],
+				["SBS, SBS VICELAND, SBS Food Network, NITV","SBS"]
+			],
 			"colour":"RED"
 		}
 	},
@@ -23,7 +29,13 @@
 			"id":"Townsville",
 			"people":239500,
 			"households":97300,
-			"fta":[],
+			"fta":[
+				["7QLD, 7TWO, 7mate, 7flix","7"],
+				["SCA Nine, GO!, Gem, 9Life","9"],
+				["WIN, ONE, ELEVEN","10"],
+				["ABC, ABC2, ABCME, ABC News 24","ABC"],
+				["SBS, SBS VICELAND, SBS Food Network, NITV","SBS"]
+			],
 			"colour":"GREEN"
 		}
 	},
@@ -37,7 +49,13 @@
 			"id":"Mackay",
 			"people":193500,
 			"households":78100,
-			"fta":[],
+			"fta":[
+				["7QLD, 7TWO, 7mate, 7flix","7"],
+				["SCA Nine, GO!, Gem, 9Life","9"],
+				["WIN, ONE, ELEVEN","10"],
+				["ABC, ABC2, ABCME, ABC News 24","ABC"],
+				["SBS, SBS VICELAND, SBS Food Network, NITV","SBS"]
+			],
 			"colour":"CYAN"
 		}
 	},
@@ -51,7 +69,13 @@
 			"id":"Rockhampton",
 			"people":239700,
 			"households":97200,
-			"fta":[],
+			"fta":[
+				["7QLD, 7TWO, 7mate, 7flix","7"],
+				["SCA Nine, GO!, Gem, 9Life","9"],
+				["WIN, ONE, ELEVEN","10"],
+				["ABC, ABC2, ABCME, ABC News 24","ABC"],
+				["SBS, SBS VICELAND, SBS Food Network, NITV","SBS"]
+			],
 			"colour":"MAGENTA"
 		}
 	},
@@ -65,7 +89,13 @@
 			"id":"Maryborough",
 			"people":621400,
 			"households":272400,
-			"fta":[],
+			"fta":[
+				["7QLD, 7TWO, 7mate, 7flix","7"],
+				["SCA Nine, GO!, Gem, 9Life","9"],
+				["WIN, ONE, ELEVEN","10"],
+				["ABC, ABC2, ABCME, ABC News 24","ABC"],
+				["SBS, SBS VICELAND, SBS Food Network, NITV","SBS"]
+			],
 			"colour":"YELLOW"
 		}
 	},
@@ -79,7 +109,13 @@
 			"id":"Toowoomba",
 			"people":283800,
 			"households":116300,
-			"fta":[],
+			"fta":[
+				["7QLD, 7TWO, 7mate, 7flix","7"],
+				["SCA Nine, GO!, Gem, 9Life","9"],
+				["WIN, ONE, ELEVEN","10"],
+				["ABC, ABC2, ABCME, ABC News 24","ABC"],
+				["SBS, SBS VICELAND, SBS Food Network, NITV","SBS"]
+			],
 			"colour":"PURPLE"
 		}
 	}
