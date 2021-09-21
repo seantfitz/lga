@@ -1112,7 +1112,7 @@ const appendBroadcast = (o,state)=>{
 		let ftaStr = '<br>FTA Networks;'
 
 		for(let i in fta){
-			ftaStr += `<br>${fta[i][0]}&nbsp;-&nbsp;Affiliation:&nbsp;${fta[i][1]}`;
+			ftaStr += `<br>${fta[i][0]}&nbsp;-&nbsp;Affiliation:&nbsp;${fta[i][1]}`
 		}
 
 		let description = `
