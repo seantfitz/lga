@@ -250,6 +250,86 @@ let qldmp = {
 	"Woodridge":["Electoral_district_of_Woodridge","Cameron Dick","Labor","Woodridge",36787,39],
 	"Scenic Rim":["Electoral_district_of_Scenic_Rim","Jon Krause","Liberal National Party","Scenic Rim",37878,4809]
 }
+let qldmayor = {
+"AURUKUN SHIRE":["Keri Tamwoy","https://www.aurukun.qld.gov.au/"],
+"BALONNE SHIRE":["Samantha O'Toole","https://www.balonne.qld.gov.au/"],
+"BANANA SHIRE":["Nev G Ferrier","https://www.banana.qld.gov.au/"],
+"BARCALDINE REGIONAL":["Sean Dillon","https://www.barcaldinerc.qld.gov.au/"],
+"BARCOO SHIRE":["Sally O’Neil","https://www.barcoo.qld.gov.au/"],
+"BLACKALL TAMBO REGIONAL":["Andrew Martin","https://www.btrc.qld.gov.au/"],
+"BOULIA SHIRE":["Eric (Rick) Britton","https://www.boulia.qld.gov.au/"],
+"BRISBANE CITY":["Lord Mayor and City Treasurer Adrian Schrinner","https://www.brisbane.qld.gov.au/"],
+"BULLOO SHIRE":["John Ferguson","https://www.bulloo.qld.gov.au/"],
+"BUNDABERG REGIONAL":["Jack Dempsey","https://www.bundaberg.qld.gov.au/"],
+"BURDEKIN SHIRE":["Lyn McLaughlin","https://www.burdekin.qld.gov.au/"],
+"BURKE SHIRE":["Ernie Camp","https://burke.qld.gov.au/"],
+"CAIRNS REGIONAL":["Bob Manning OAM","https://www.cairns.qld.gov.au/"],
+"CARPENTARIA SHIRE":["Jack Bawden","https://www.carpentaria.qld.gov.au/"],
+"CASSOWARY COAST REGIONAL":["Mark Nolan","https://www.cassowarycoast.qld.gov.au/"],
+"CENTRAL HIGHLANDS REGIONAL":["Kerry Hayes","https://www.chrc.qld.gov.au/"],
+"CHARTERS TOWERS REGIONAL":["Frank Beveridge","https://www.charterstowers.qld.gov.au/"],
+"CHERBOURG ABORIGINAL SHIRE":["Elvie Sandow","https://cherbourg.qld.gov.au/"],
+"CLONCURRY SHIRE":["Gregory Campbell","https://www.cloncurry.qld.gov.au/"],
+"COOK SHIRE":["Peter Scott","http://www.cook.qld.gov.au/"],
+"CROYDON SHIRE":["Trevor Pickering","https://www.croydon.qld.gov.au/"],
+"DIAMANTINA SHIRE":["Robbie Dare","https://www.diamantina.qld.gov.au/"],
+"DOOMADGEE ABORIGINAL SHIRE":["Jason Grant Ned","https://www.doomadgee.qld.gov.au/"],
+"DOUGLAS SHIRE":["Michael Kerr","https://douglas.qld.gov.au/"],
+"ETHERIDGE SHIRE":["Barry Hughes","https://www.etheridge.qld.gov.au/"],
+"FLINDERS SHIRE":["Jane McNamara","https://www.flinders.qld.gov.au/"],
+"FRASER COAST REGIONAL":["George Seymour","https://www.frasercoast.qld.gov.au/"],
+"GLADSTONE REGIONAL":["Matt Burnett","https://www.gladstone.qld.gov.au/"],
+"GOLD COAST CITY":["Tom Tate","https://www.goldcoast.qld.gov.au/"],
+"GOONDIWINDI REGIONAL":["Lawrence Springborg, AM","https://www.grc.qld.gov.au/"],
+"GYMPIE REGIONAL":["Glen Hartwig","https://www.gympie.qld.gov.au/"],
+"HINCHINBROOK SHIRE":["Ramon Jayo","https://www.hinchinbrook.qld.gov.au/"],
+"HOPE VALE ABORIGINAL SHIRE":["Jason Woibo","https://www.hopevale.qld.gov.au/"],
+"IPSWICH CITY":["Teresa Harding","https://www.ipswich.qld.gov.au/"],
+"ISAAC REGIONAL":["Anne Baker","https://www.isaac.qld.gov.au/"],
+"KOWANYAMA ABORIGINAL SHIRE":["Robbie Sands","https://www.kowanyama.qld.gov.au/"],
+"LIVINGSTONE SHIRE":["Andy Ireland","https://www.livingstone.qld.gov.au/"],
+"LOCKHART RIVER ABORIGINAL SHIRE":["Wayne Butcher","https://lockhart.qld.gov.au/"],
+"LOCKYER VALLEY REGIONAL":["Tanya Milligan","https://www.lockyervalley.qld.gov.au/"],
+"LOGAN CITY":["Darren Power","https://www.logan.qld.gov.au/"],
+"LONGREACH REGIONAL":["Anthony (Tony) Rayner","https://www.longreach.qld.gov.au/"],
+"MACKAY REGIONAL":["Greg Williamson","https://www.mackay.qld.gov.au/"],
+"MAPOON ABORIGINAL SHIRE":["Aileen Addo","https://www.mapoon.qld.gov.au/"],
+"MARANOA REGIONAL":["Tyson Golder","https://www.maranoa.qld.gov.au/"],
+"MAREEBA SHIRE":["Angela Toppin","https://msc.qld.gov.au/"],
+"MCKINLAY SHIRE":["Philip Curr","https://www.mckinlay.qld.gov.au/"],
+"MORETON BAY REGIONAL":["Peter Flannery","https://www.moretonbay.qld.gov.au/Home"],
+"MORNINGTON SHIRE":["Kyle Yanner","https://www.mornington.qld.gov.au/"],
+"MOUNT ISA CITY":["Danielle Slade","https://www.mountisa.qld.gov.au/"],
+"MURWEH SHIRE":["Shaun Radnedge","https://www.murweh.qld.gov.au/"],
+"NAPRANUM ABORIGINAL SHIRE":["Janita Motton","http://www.napranum.qld.gov.au/"],
+"NOOSA SHIRE":["Clare Stewart","https://www.noosa.qld.gov.au/"],
+"NORTH BURNETT REGIONAL":["Rachel Chambers","https://northburnett.qld.gov.au/"],
+"NORTHERN PENINSULA AREA REGIONAL":["Patricia Yusia","https://www.nparc.qld.gov.au/"],
+"PALM ISLAND ABORIGINAL SHIRE":["Mislam Sam","http://www.palmcouncil.qld.gov.au/"],
+"PAROO SHIRE":["Suzette Beresford","https://www.paroo.qld.gov.au/"],
+"PORMPURAAW ABORIGINAL SHIRE":["Richard Tarpencha","https://www.pormpuraaw.qld.gov.au/"],
+"QUILPIE SHIRE":["Stuart Mackenzie","https://quilpie.qld.gov.au/"],
+"REDLAND CITY":["Karen Williams","https://www.redland.qld.gov.au/"],
+"RICHMOND SHIRE":["John Wharton","https://www.richmond.qld.gov.au/"],
+"ROCKHAMPTON REGIONAL":["Tony Williams","https://www.rockhamptonregion.qld.gov.au/Home"],
+"SCENIC RIM REGIONAL":["Greg Christensen","https://www.scenicrim.qld.gov.au/"],
+"SOMERSET REGIONAL":["Graeme Lehmann","https://www.somerset.qld.gov.au/"],
+"SOUTH BURNETT REGIONAL":["Brett Otto","https://www.southburnett.qld.gov.au/"],
+"SOUTHERN DOWNS REGIONAL":["Vic Pennisi","https://www.sdrc.qld.gov.au/"],
+"SUNSHINE COAST REGIONAL":["Mark Jamieson","https://www.sunshinecoast.qld.gov.au/"],
+"TABLELANDS REGIONAL":["Rod Marti","https://www.trc.qld.gov.au/"],
+"TOOWOOMBA REGIONAL":["Paul Antonio","https://www.tr.qld.gov.au/"],
+"TORRES SHIRE":["Vonda Malone","https://www.torres.qld.gov.au/"],
+"TORRES STRAIT ISLAND REGIONAL":["Phillemon Mosby","http://www.tsirc.qld.gov.au/"],
+"TOWNSVILLE CITY":["Jenny Hill","https://www.townsville.qld.gov.au/"],
+"WEIPA TOWN":["Michael Rowland (Chair)","https://www.weipatownauthority.com.au/"],
+"WESTERN DOWNS REGIONAL":["Paul McVeigh","https://www.wdrc.qld.gov.au/"],
+"WHITSUNDAY REGIONAL":["Andrew Willcox","https://www.whitsundayrc.qld.gov.au/"],
+"WINTON SHIRE":["Gavin Baskett","https://www.winton.qld.gov.au/"],
+"WOORABINDA ABORIGINAL SHIRE":["Joshua Weazel","https://www.woorabinda.qld.gov.au/"],
+"WUJAL WUJAL ABORIGINAL SHIRE":["Bradley Creek","https://www.wujalwujalcouncil.qld.gov.au/"],
+"YARRABAH ABORIGINAL SHIRE":["Ross Andrews","https://www.fnqroc.qld.gov.au/fnqroc-board-members/yarrabah-aboriginal-shire-council"]
+}
 /***/
 
 /*MAP SETUP*/
@@ -518,7 +598,7 @@ const listSelections = (a)=>{
 			<option value="deselect" id="clearAreaSelection">None</option>
 		`)
 		
-		for(let i in s){
+		for(let i in s){//console.log(s[i])
 			$('.areaFocus').append(`<option value="${selections[a][s[i]]}">${toTitleCase(s[i])}</option>`)
 		}
 
@@ -655,7 +735,21 @@ const appendLGAs = (o,state)=>{
 
 		let coords = o[i]['geometry']['coordinates'][0]
 		let boundary = []
-		
+
+		/***/
+		// console.log(qldmayor[LGA_NAME])
+		// o[i]['properties']['mayor'] = qldmayor[LGA_NAME][0]
+		// o[i]['properties']['url'] = qldmayor[LGA_NAME][1]
+		/***/
+
+		let mayor = o[i]['properties']['mayor']
+		let url = o[i]['properties']['url']
+
+		let description = `
+		Mayor:&nbsp;${mayor}<br>
+		Website:&nbsp;<a href="${url}" target="_blank">${url.replace(/https:\/\//g,'').replace(/www\./g,'')}</a>
+		`
+
 		let r = colours[thisCol][0] / 255
 		let g = colours[thisCol][1] / 255
 		let b = colours[thisCol][2] / 255
@@ -685,6 +779,7 @@ const appendLGAs = (o,state)=>{
 
 		lgas.entities.add({
 			name: LGA_NAME,
+			description:description,
 			polygon: {
 				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
 				height : 0,
@@ -717,6 +812,7 @@ const appendLGAs = (o,state)=>{
 	// 		console.log(k[i],repNames[k[i]])
 	// 	}
 	// }
+	// console.log(JSON.stringify(o))
 }
 
 /***/
@@ -1021,8 +1117,18 @@ const appendZones = (o,state)=>{
 		let localities = o[i]['properties']['localities']
 		let colour = o[i]['properties']['colour']
 
+		let thisLGAs = o[i]['properties']['lgas'].sort()
+		let lgaStr = 'LGAs covered;<ul>'
+
+		for(let i in thisLGAs){
+			lgaStr += `<li>${toTitleCase(thisLGAs[i])}</li>`
+		}
+
+		lgaStr += '</ul>'
+
 		let description = `
-		Population:&nbsp;${population}
+		Population:&nbsp;${population}<br>
+		${lgaStr}
 		`
 
 		let coords = o[i]['geometry']['coordinates'][0]
@@ -1109,11 +1215,14 @@ const appendBroadcast = (o,state)=>{
 		let households = o[i]['properties']['households']
 		let colour = o[i]['properties']['colour']
 		let fta = o[i]['properties']['fta']
-		let ftaStr = '<br>FTA Networks;'
+		let ftaStr = 'FTA Networks;<ul>'
 
 		for(let i in fta){
-			ftaStr += `<br>${fta[i][0]}&nbsp;-&nbsp;Affiliation:&nbsp;${fta[i][1]}`
+			// ftaStr += `<br>${fta[i][0]}&nbsp;-&nbsp;Affiliation:&nbsp;${fta[i][1]}`
+			ftaStr += `<li>${fta[i][0]}&nbsp;-&nbsp;Affiliation:&nbsp;${fta[i][1]}</li>`
 		}
+
+		ftaStr += '</ul>'
 
 		let description = `
 		People:&nbsp;${numberWithCommas(people)}<br>

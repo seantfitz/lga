@@ -8,7 +8,15 @@
 		"properties":{
 			"id":"Zone 1 - Brisbane and surrounds",
 			"population":"4,552,560",
-			"sites":[],
+			"lgas":[
+				"IPSWICH CITY",
+				"LOGAN CITY",
+				"BRISBANE CITY",
+				"MORETON BAY REGIONAL",
+				"REDLAND CITY",
+				"SCENIC RIM REGIONAL",
+				"GOLD COAST CITY"
+			],
 			"colour":"RED"
 		}
 	},
@@ -21,7 +29,19 @@
 		"properties":{
 			"id":"Zone 2 - Darling Downs",
 			"population":"245,672",
-			"sites":[],
+			"lgas":[
+				"BULLOO SHIRE",
+				"PAROO SHIRE",
+				"MURWEH SHIRE",
+				"SOUTHERN DOWNS REGIONAL",
+				"BALONNE SHIRE",
+				"GOONDIWINDI REGIONAL",
+				"LOCKYER VALLEY REGIONAL",
+				"QUILPIE SHIRE",
+				"WESTERN DOWNS REGIONAL",
+				"TOOWOOMBA REGIONAL",
+				"MARANOA REGIONAL"
+			],
 			"colour":"YELLOW"
 		}
 	},
@@ -34,7 +54,17 @@
 		"properties":{
 			"id":"Zone 3 - Sunshine and Fraser Coast",
 			"population":"729,131",
-			"sites":[],
+			"lgas":[
+				"NOOSA SHIRE",
+				"GYMPIE REGIONAL",
+				"BUNDABERG REGIONAL",
+				"FRASER COAST REGIONAL",
+				"CHERBOURG ABORIGINAL SHIRE",
+				"SOMERSET REGIONAL",
+				"SUNSHINE COAST REGIONAL",
+				"NORTH BURNETT REGIONAL",
+				"SOUTH BURNETT REGIONAL"
+			],
 			"colour":"GREEN"
 		}
 	},
@@ -47,7 +77,20 @@
 		"properties":{
 			"id":"Zone 4 - Central Queensland",
 			"population":"175,652",
-			"sites":[],
+			"lgas":[
+				"GLADSTONE REGIONAL",
+				"CENTRAL HIGHLANDS REGIONAL",
+				"WINTON SHIRE",
+				"WOORABINDA ABORIGINAL SHIRE",
+				"BOULIA SHIRE",
+				"BANANA SHIRE",
+				"BARCOO SHIRE",
+				"BLACKALL TAMBO REGIONAL",
+				"DIAMANTINA SHIRE",
+				"BARCALDINE REGIONAL",
+				"LONGREACH REGIONAL",
+				"ROCKHAMPTON REGIONAL"
+			],
 			"colour":"CYAN"
 		}
 	},
@@ -60,7 +103,12 @@
 		"properties":{
 			"id":"Zone 5 - Mackay Region",
 			"population":"121,077",
-			"sites":[],
+			"lgas":[
+				"MACKAY REGIONAL",
+				"WHITSUNDAY REGIONAL",
+				"LIVINGSTONE SHIRE",
+				"ISAAC REGIONAL"
+			],
 			"colour":"PURPLE"
 		}
 	},
@@ -73,7 +121,18 @@
 		"properties":{
 			"id":"Zone 6 - North Queensland",
 			"population":"239,892",
-			"sites":[],
+			"lgas":[
+				"MOUNT ISA CITY",
+				"CLONCURRY SHIRE",
+				"TOWNSVILLE CITY",
+				"BURDEKIN SHIRE",
+				"FLINDERS SHIRE",
+				"HINCHINBROOK SHIRE",
+				"MCKINLAY SHIRE",
+				"CHARTERS TOWERS REGIONAL",
+				"PALM ISLAND ABORIGINAL SHIRE",
+				"RICHMOND SHIRE"
+			],
 			"colour":"MAGENTA"
 		}
 	},
@@ -86,7 +145,33 @@
 		"properties":{
 			"id":"Zone 7 - Far North Queensland",
 			"population":"204,272",
-			"sites":[],
+			"lgas":[
+				"PORMPURAAW ABORIGINAL SHIRE",
+				"KOWANYAMA ABORIGINAL SHIRE",
+				"LOCKHART RIVER ABORIGINAL SHIRE",
+				"CROYDON SHIRE",
+				"CASSOWARY COAST REGIONAL",
+				"WEIPA TOWN",
+				"CARPENTARIA SHIRE",
+				"TABLELANDS REGIONAL",
+				"TORRES SHIRE",
+				"MAPOON ABORIGINAL SHIRE",
+				"TORRES STRAIT ISLAND REGIONAL",
+				"BURKE SHIRE",
+				"HOPE VALE ABORIGINAL SHIRE",
+				"MORNINGTON SHIRE",
+				"CAIRNS REGIONAL",
+				"DOUGLAS SHIRE",
+				"AURUKUN SHIRE",
+				"DOOMADGEE ABORIGINAL SHIRE",
+				"NORTHERN PENINSULA AREA REGIONAL",
+				"YARRABAH ABORIGINAL SHIRE",
+				"COOK SHIRE",
+				"WUJAL WUJAL ABORIGINAL SHIRE",
+				"ETHERIDGE SHIRE",
+				"MAREEBA SHIRE",
+				"NAPRANUM ABORIGINAL SHIRE"
+			],
 			"colour":"ORANGE"
 		}
 	}
