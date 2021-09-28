@@ -425,7 +425,91 @@ let selections = {
 	broadcast:{},
 	localities:{},
 }
+let guidSelect = {
+	clear:{},
+	lgas:{},
+	stateDivisions:{},
+	federal:{},
+	zones:{},
+	broadcast:{},
+	localities:{},
+}
 /*GLOBAL VARIABLES*/
+
+/*H*O*V*E*R*/
+/*const hoverLabel = viewer.entities.add({
+	label: {
+		show: false,
+		showBackground: true,
+		horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+		verticalOrigin: Cesium.VerticalOrigin.TOP,
+		pixelOffset: new Cesium.Cartesian2(15, 0),
+	},
+});
+
+const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+
+const mouseMove = (e)=>{
+	$('.tooltip').css({
+		left:`${e.clientX}px`,
+		top:`${e.clientY}px`
+	})
+}
+$('body').on('mousemove',mouseMove)
+
+handler.setInputAction((movement)=>{
+	let pickedObject = viewer.scene.pick(movement.endPosition);
+
+	// switch(true){
+	// 	case !Cesium.defined(pickedObject) && window['hover'] == undefined://there is no entity AND there WASN'T one
+	// 	case Cesium.defined(pickedObject) && pickedObject['collection'] != undefined://there IS an entity but it's a label
+	// 	return false;
+
+	// 	case window['hover'] != undefined && pickedObject != window['hover']://there was an entity but not this one
+	// 	window['hover']['id']['label']['show'] = false;
+	// 	break;
+	// }
+
+	switch(true){
+		case !Cesium.defined(pickedObject)://there is no entity
+		$('.tooltip').html('').addClass('displayNone');
+		// case pickedObject['collection'] != undefined://the entity is a label//captioned out for including localities
+		// hoverLabel.label.show = false;
+		return false;
+	}
+
+	let owner = pickedObject['id']['entityCollection']['_owner']['_name']
+
+	switch(owner){
+		case 'lgas':
+		case 'stateDivisions':
+		case 'federal':
+		case 'zones':
+		case 'broadcast':
+		
+		case 'localities':
+
+		$('.tooltip').html(`<span>${pickedObject['id']['_label']['_text']['_value']}</span>`).removeClass('displayNone');
+		
+		// pickedObject.id.label.show = true;
+		// window['hover'] = pickedObject;
+
+		// let cartesian = viewer.camera.pickEllipsoid(movement.endPosition,viewer.scene.globe.ellipsoid);
+		// let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+		// let longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
+		// let latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(2);
+		// hoverLabel.position = cartesian;
+		// hoverLabel.label.show = true;
+		// hoverLabel.label.text = pickedObject['id']['_label']['_text']['_value'];
+		
+		break;
+
+		// default: return false;
+		// default: hoverLabel.label.show = false; break;
+		default: $('.tooltip').html('').addClass('displayNone'); break;
+	}
+}, Cesium.ScreenSpaceEventType.MOUSE_MOVE);*/
+/*H*O*V*E*R*/
 
 /*FUNCTIONS*/
 viewer.trackedEntityChanged.addEventListener((e)=>{
@@ -436,32 +520,30 @@ viewer.selectedEntityChanged.addEventListener((e)=>{
 	viewer.trackedEntity = undefined;
 
 	/*alpha channel*/
-	if(window['polygon'] != undefined){
-		let p = window['polygon']
-		let rgba = p['_polygon']['_material']['_color']['_value']
-		let R = rgba['red']
-		let G = rgba['green']
-		let B = rgba['blue']
-		let nc = new Cesium.Color(R,G,B,0.25)
-		p.polygon.material = nc
-		p.polygon.outline = false
-		// p.polygon.outlineColor = Cesium.Color.BLACK
+	if(window['polygons'] != undefined){//there is an array of polygons in memory
+		for(let i in window['polygons']){
+			let p = window['polygons'][i]
+			let rgba = p['_polygon']['_material']['_color']['_value']
+			let R = rgba['red']
+			let G = rgba['green']
+			let B = rgba['blue']
+			let nc = new Cesium.Color(R,G,B,0.25)
+			p.polygon.material = nc
+			p.polygon.outline = false
+		}
 	}
 	/*alpha channel*/
 	
-	if(e == undefined){
+	if(e == undefined){//clicked out of polygon or cleared selection
 		let b = stateBox[$('.stateSelect').val()];
-
 		$('.areaFocus').val('clear')
-
 		viewer.camera.flyTo({
 			destination : Cesium.Rectangle.fromDegrees(b[0],b[1],b[2],b[3])
 		});
 		return false
 	}else{
-
 		/*selection indicator*/
-		switch(!e['_polygon']){
+		switch(!e['_polygon']){//selected entity is a point or label
 			case false: $('.cesium-viewer-selectionIndicatorContainer').addClass('displayNone'); break;
 			case true:
 			setTimeout(()=>{
@@ -471,17 +553,20 @@ viewer.selectedEntityChanged.addEventListener((e)=>{
 		}
 		/*selection indicator*/
 
-		let id = e['_id'], name = e['_name'], owner = e['entityCollection']['_owner']['_name']
-
+		let id = e['_id']
+		let name = e['_name']
+		let owner = e['entityCollection']['_owner']['_name']
+		let entGroup = guidSelect[owner][e['entGroup']]
+		
 		switch(owner){
 			case 'lgas':
 			case 'stateDivisions':
 			case 'federal':
 			case 'zones':
 			case 'broadcast':
-			
-			$('.areaFocus').val(id)
-			
+		
+			$('.areaFocus').val(entGroup[0])
+			// e.label.show = false
 			let b = e['_boundingBox']
 			
 			/*alpha channel*/
@@ -491,11 +576,14 @@ viewer.selectedEntityChanged.addEventListener((e)=>{
 			let B = rgba['blue']
 			let nc = new Cesium.Color(R,G,B,0.5)
 
-			window['polygon'] = e
-			e.polygon.material = nc
-			e.polygon.outline = true
-			// e.polygon.outlineColor = Cesium.Color.RED
-			// e.polygon.outlineColor = new Cesium.Color(0,1,0,1)
+			window['polygons'] = []
+		
+			for(let i in entGroup){
+				let p = window['currentEntities'][entGroup[i]]
+				window['polygons'].push(p)
+				p.polygon.material = nc
+				p.polygon.outline = true
+			}
 			/*alpha channel*/
 			
 			viewer.camera.flyTo({
@@ -577,7 +665,14 @@ const decimalise = (val,dec)=>{
 }
 
 const listSelections = (a)=>{
-	// console.log(a)
+
+	if($(`.areaSelect option[value="${window['selectedArea']}"]`).prop('disabled') == true){
+		$('.areaSelect').val('clear');
+		$('.areaFocus').prop('disabled',true).val('clear');
+		$('#dynamicOption').html('Select Division');
+		return false;
+	}
+
 	if(a === null || a == 'clear' || a == 'deselect'){
 		$('.areaSelect').prop('disabled',false);
 		$('.areaFocus').prop('disabled',true).val('clear');//
@@ -598,8 +693,8 @@ const listSelections = (a)=>{
 			<option value="deselect" id="clearAreaSelection">None</option>
 		`)
 		
-		for(let i in s){//console.log(s[i])
-			$('.areaFocus').append(`<option value="${selections[a][s[i]]}">${toTitleCase(s[i])}</option>`)
+		for(let i in s){
+			$('.areaFocus').append(`<option value="${selections[a][s[i]][0]}">${toTitleCase(s[i])}</option>`)
 		}
 
 		$('.areaSelect, .areaFocus').prop('disabled',false);
@@ -708,13 +803,49 @@ const loadLGAs = (state)=>{
 		appendLGAs(window[propName],state)
 	}
 }
-// let repNames = {}
+
 const appendLGAs = (o,state)=>{
 
-	let thisCol = 0;
-	// console.log(o.length)
-	for(let i in o){
+	$('.areaSelect option[value="lgas"]').prop('disabled',o.length <= 0);
+	$('.areaSelect option[value="lgas"]').prop('disabled',state != 'QLD');
 
+	if(o.length <= 0){
+		loadLocalities(state)
+		return false;
+	}
+
+	// console.log(o.length)
+	let repNames = {}
+	let thisCol = 0;
+	let thisName;
+	let entGroup;
+
+	if(o[0]['properties']['NSW_LGA__2']){
+		thisName = o[0]['properties']['NSW_LGA__2']
+	}else if(o[0]['properties']['QLD_LGA__2']){
+		thisName = o[0]['properties']['QLD_LGA__2']
+	}else{
+		thisName = o[0]['properties']['LGA_NAME']
+	}
+
+	
+
+	let r = colours[0][0] / 255;
+	let g = colours[0][1] / 255;
+	let b = colours[0][2] / 255;
+	let colour = new Cesium.Color(r,g,b,0.25);
+
+	/*SETUP FOR BOUNDING BOXES - SAVE RESULT TO JSON FILE - CAPTION OUT WHEN NOT IN USE*/
+
+	let W = 180;//lower lon
+	let E = -180;//higher lon
+	let S = 90;//lower lat
+	let N = -90;//higher lat
+
+	let boxes = {}
+
+	for(let i in o){
+		
 		let LGA_NAME
 
 		if(o[i]['properties']['NSW_LGA__2']){
@@ -725,13 +856,75 @@ const appendLGAs = (o,state)=>{
 			LGA_NAME = o[i]['properties']['LGA_NAME']
 		}
 
-		/**/
-		// if(!repNames[LGA_NAME]){
-		// 	repNames[LGA_NAME] = 1
-		// }else{
-		// 	repNames[LGA_NAME] ++
-		// }
-		/**/
+		let coords = o[i]['geometry']['coordinates'][0]
+
+		if(!repNames[LGA_NAME]){
+			repNames[LGA_NAME] = 1
+			boxes[LGA_NAME] = {}
+			W = 180;
+			E = -180;
+			S = 90;
+			N = -90;
+		}else{
+			repNames[LGA_NAME] ++
+		}
+
+		for(let i in coords){
+			if(coords[i][0] < W){W = coords[i][0]}
+			if(coords[i][0] > E){E = coords[i][0]}
+			if(coords[i][1] < S){S = coords[i][1]}
+			if(coords[i][1] > N){N = coords[i][1]}
+
+			boxes[LGA_NAME]['W'] = W
+			boxes[LGA_NAME]['E'] = E
+			boxes[LGA_NAME]['S'] = S
+			boxes[LGA_NAME]['N'] = N
+		}
+	}
+
+	for(let i in o){
+		
+		let LGA_NAME
+
+		if(o[i]['properties']['NSW_LGA__2']){
+			LGA_NAME = o[i]['properties']['NSW_LGA__2']
+		}else if(o[i]['properties']['QLD_LGA__2']){
+			LGA_NAME = o[i]['properties']['QLD_LGA__2']
+		}else{
+			LGA_NAME = o[i]['properties']['LGA_NAME']
+		}
+
+		o[i]['properties']['boundingBox'] = boxes[LGA_NAME]
+	}
+
+	// console.log(o)
+	// console.log(JSON.stringify(o))
+	// return false;
+
+	/*SETUP FOR BOUNDING BOXES - SAVE RESULT TO JSON FILE - CAPTION OUT WHEN NOT IN USE*/
+
+	let k = Object.keys(repNames)
+	let colourStep = Math.floor(colours.length / k.length);
+
+	for(let i in o){
+
+		let W = o[i]['properties']['boundingBox']['W']
+		let E = o[i]['properties']['boundingBox']['E']
+		let S = o[i]['properties']['boundingBox']['S']
+		let N = o[i]['properties']['boundingBox']['N']
+
+		let midLat = (S + N) / 2
+		let midLon = (W + E) / 2
+
+		let LGA_NAME
+
+		if(o[i]['properties']['NSW_LGA__2']){
+			LGA_NAME = o[i]['properties']['NSW_LGA__2']
+		}else if(o[i]['properties']['QLD_LGA__2']){
+			LGA_NAME = o[i]['properties']['QLD_LGA__2']
+		}else{
+			LGA_NAME = o[i]['properties']['LGA_NAME']
+		}
 
 		let coords = o[i]['geometry']['coordinates'][0]
 		let boundary = []
@@ -744,69 +937,109 @@ const appendLGAs = (o,state)=>{
 
 		let mayor = o[i]['properties']['mayor']
 		let url = o[i]['properties']['url']
-
-		let description = `
-		Mayor:&nbsp;${mayor}<br>
-		Website:&nbsp;<a href="${url}" target="_blank">${url.replace(/https:\/\//g,'').replace(/www\./g,'')}</a>
-		`
-
-		let r = colours[thisCol][0] / 255
-		let g = colours[thisCol][1] / 255
-		let b = colours[thisCol][2] / 255
-		let colour = new Cesium.Color(r,g,b,0.25)
-
-		thisCol++;
-		if(thisCol >= colours.length - 1){
-			thisCol = 0;
+		let description = ''
+		
+		if(url != undefined){
+			description = `
+			Mayor:&nbsp;${mayor}<br>
+			Website:&nbsp;<a href="${url}" target="_blank">${url.replace(/https:\/\//g,'').replace(/www\./g,'')}</a>
+			`
 		}
 
-		let W = 180;//lower lon
-		let E = -180;//higher lon
-		let S = 90;//lower lat
-		let N = -90;//higher lat
+		if(thisName !== LGA_NAME || i == 0){//It's a new division - reset colour
 
-		for(let i in coords){
-			boundary.push(coords[i][0],coords[i][1])
+			thisCol += Math.max(colourStep,1)
+			
+			if(thisCol >= colours.length - 1){
+				thisCol = 0;
+			}
 
-			if(coords[i][0] < W){W = coords[i][0]}
-			if(coords[i][0] > E){E = coords[i][0]}
-			if(coords[i][1] < S){S = coords[i][1]}
-			if(coords[i][1] > N){N = coords[i][1]}
+			r = colours[thisCol][0] / 255
+			g = colours[thisCol][1] / 255
+			b = colours[thisCol][2] / 255
+			colour = new Cesium.Color(r,g,b,0.25)
+
+			let W_ = 180;//lower lon
+			let E_ = -180;//higher lon
+			let S_ = 90;//lower lat
+			let N_ = -90;//higher lat
+
+			for(let i in coords){
+				boundary.push(coords[i][0],coords[i][1])
+
+				if(coords[i][0] < W_){W_ = coords[i][0]}
+				if(coords[i][0] > E_){E_ = coords[i][0]}
+				if(coords[i][1] < S_){S_ = coords[i][1]}
+				if(coords[i][1] > N_){N_ = coords[i][1]}
+			}
+
+			// let midLat = (S + N) / 2
+			// let midLon = (W + E) / 2
+
+			lgas.entities.add({
+				name: LGA_NAME,
+				description:description,
+				polygon: {
+					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
+					height : 0,
+					material : colour,
+					outline : false,
+					outlineColor : Cesium.Color.BLACK,
+				},
+				position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 1000),
+				label: {
+					text: wordWrap(LGA_NAME),
+					fillColor: Cesium.Color.BLUE,
+					scaleByDistance: new Cesium.NearFarScalar(50000, 1.5, 5000000, 0),
+					translucencyByDistance: new Cesium.NearFarScalar(50000, 0, 100000, 1),
+					depthTestAgainstTerrain: false,
+				},
+				boundingBox: {W:W,E:E,S:S,N:N}
+			})
+
+			let guid = lgas['_entityCollection']['_entities']['_array'][i]['_id']
+			entGroup = guid//defined at first polygon in the group
+
+			window['currentEntities'][guid] = lgas['_entityCollection']['_entities']['_array'][i]
+
+			lgas['_entityCollection']['_entities']['_array'][i]['entGroup'] = entGroup//add the attribute to the entity
+			guidSelect['lgas'][entGroup] = [guid]//store unique id in an array to loop over
+
+			selections['lgas'][LGA_NAME] = [guid]
+
+			thisName = LGA_NAME//string for division name
+		}else{
+
+			for(let i in coords){
+				boundary.push(coords[i][0],coords[i][1])
+			}
+
+			lgas.entities.add({
+				name: LGA_NAME,
+				description: description,
+				polygon: {
+					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
+					height: 0,
+					material : colour,
+					outline : false,
+					outlineColor : Cesium.Color.BLACK,
+				},
+				boundingBox: {W:W,E:E,S:S,N:N},
+				colour: colour,
+				entGroup:entGroup//add the entGroup attribute to the entity
+			})
+
+			let guid = lgas['_entityCollection']['_entities']['_array'][i]['_id']
+			window['currentEntities'][guid] = lgas['_entityCollection']['_entities']['_array'][i]
+
+			guidSelect['lgas'][entGroup].push(guid)//store unique id in an array to loop over
+			selections['lgas'][LGA_NAME].push(guid)
 		}
-
-		let midLat = (S + N) / 2
-		let midLon = (W + E) / 2
-
-		lgas.entities.add({
-			name: LGA_NAME,
-			description:description,
-			polygon: {
-				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
-				height : 0,
-				material : colour,
-				outline : false,
-				outlineColor : Cesium.Color.BLACK,
-			},
-			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 1000),
-			label: {
-				text: wordWrap(LGA_NAME),
-				// style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-				// outlineWidth : 2,
-				fillColor: Cesium.Color.BLUE,
-				scaleByDistance: new Cesium.NearFarScalar(50000, 1.5, 5000000, 0),
-				translucencyByDistance: new Cesium.NearFarScalar(50000, 0, 100000, 1),
-				depthTestAgainstTerrain: false,
-			},
-			boundingBox: {W:W,E:E,S:S,N:N}
-		})
-
-		let guid = lgas['_entityCollection']['_entities']['_array'][i]['_id']
-		window['currentEntities'][guid] = lgas['_entityCollection']['_entities']['_array'][i]
-		selections['lgas'][LGA_NAME] = guid
 	}
 	loadLocalities(state)
 	// console.log(JSON.stringify(repNames))
 	// let k = Object.keys(repNames)
+	// console.clear()
 	// for(let i in k){
 	// 	if(repNames[k[i]] > 1){
 	// 		console.log(k[i],repNames[k[i]])
@@ -839,22 +1072,80 @@ const loadStateDivisions = (state)=>{
 		appendStateDivisions(window[propName],state)
 	}
 }
-let repNames = {}
+
 const appendStateDivisions = (o,state)=>{
 
+	$('.areaSelect option[value="stateDivisions"]').prop('disabled',o.length <= 0);
+
+	if(o.length <= 0){
+		loadLGAs(state)
+		return false;
+	}
+	
+	let repNames = {}
 	let thisCol = 0;
 	// console.log(o.length)
-	for(let i in o){
+	let entGroup
+	let thisName = o[0]['properties']['NAME']
 
-		let NAME = o[i]['properties']['NAME']
+	let r = colours[0][0] / 255;
+	let g = colours[0][1] / 255;
+	let b = colours[0][2] / 255;
+	let colour = new Cesium.Color(r,g,b,0.25);
+
+	/*SETUP FOR BOUNDING BOXES - SAVE RESULT TO JSON FILE - CAPTION OUT WHEN NOT IN USE*/
+
+	let W = 180;//lower lon
+	let E = -180;//higher lon
+	let S = 90;//lower lat
+	let N = -90;//higher lat
+
+	let boxes = {}
+
+	for(let i in o){
 		
-		/**/
-		// if(!repNames[NAME]){
-		// 	repNames[NAME] = 1
-		// }else{
-		// 	repNames[NAME] ++
-		// }
-		/**/
+		let NAME = o[i]['properties']['NAME']
+		let coords = o[i]['geometry']['coordinates'][0]
+
+		if(!repNames[NAME]){
+			repNames[NAME] = 1
+			boxes[NAME] = {}
+			W = 180;
+			E = -180;
+			S = 90;
+			N = -90;
+		}else{
+			repNames[NAME] ++
+		}
+
+		for(let i in coords){
+			if(coords[i][0] < W){W = coords[i][0]}
+			if(coords[i][0] > E){E = coords[i][0]}
+			if(coords[i][1] < S){S = coords[i][1]}
+			if(coords[i][1] > N){N = coords[i][1]}
+
+			boxes[NAME]['W'] = W
+			boxes[NAME]['E'] = E
+			boxes[NAME]['S'] = S
+			boxes[NAME]['N'] = N
+		}
+	}
+
+	for(let i in o){
+		let NAME = o[i]['properties']['NAME']
+		o[i]['properties']['boundingBox'] = boxes[NAME]
+	}
+
+	// console.log(o)
+	// console.log(JSON.stringify(o))
+	// return false;
+
+	/*SETUP FOR BOUNDING BOXES - SAVE RESULT TO JSON FILE - CAPTION OUT WHEN NOT IN USE*/
+
+	let k = Object.keys(repNames)
+	let colourStep = Math.floor(colours.length / k.length);
+
+	for(let i in o){
 
 		/***/
 		// // console.log(toTitleCase(NAME))
@@ -866,6 +1157,16 @@ const appendStateDivisions = (o,state)=>{
 		// o[i]['properties']['electors'] = qldmp[toTitleCase(NAME)][4]
 		// o[i]['properties']['Area_SqKm'] = qldmp[toTitleCase(NAME)][5]
 		/***/
+
+		let W = o[i]['properties']['boundingBox']['W']
+		let E = o[i]['properties']['boundingBox']['E']
+		let S = o[i]['properties']['boundingBox']['S']
+		let N = o[i]['properties']['boundingBox']['N']
+
+		let midLat = (S + N) / 2
+		let midLon = (W + E) / 2
+
+		let NAME = o[i]['properties']['NAME']
 		let mp = o[i]['properties']['mp']
 		let party = o[i]['properties']['party']
 		let namesake = o[i]['properties']['namesake']
@@ -884,60 +1185,98 @@ const appendStateDivisions = (o,state)=>{
 
 		let coords = o[i]['geometry']['coordinates'][0]
 		let boundary = []
-		
-		let r = colours[thisCol][0] / 255
-		let g = colours[thisCol][1] / 255
-		let b = colours[thisCol][2] / 255
-		let colour = new Cesium.Color(r,g,b,0.25)
 
-		thisCol++;
-		if(thisCol >= colours.length - 1){
-			thisCol = 0;
+		if(thisName !== NAME || i == 0){//It's a new division - reset colour
+
+			thisCol += Math.max(colourStep,1)
+
+			if(thisCol >= colours.length - 1){
+				thisCol = 0;
+			}
+			
+			r = colours[thisCol][0] / 255
+			g = colours[thisCol][1] / 255
+			b = colours[thisCol][2] / 255
+			colour = new Cesium.Color(r,g,b,0.25)
+
+			let W_ = 180;//lower lon
+			let E_ = -180;//higher lon
+			let S_ = 90;//lower lat
+			let N_ = -90;//higher lat
+
+			for(let i in coords){
+				boundary.push(coords[i][0],coords[i][1])
+
+				if(coords[i][0] < W_){W_ = coords[i][0]}
+				if(coords[i][0] > E_){E_ = coords[i][0]}
+				if(coords[i][1] < S_){S_ = coords[i][1]}
+				if(coords[i][1] > N_){N_ = coords[i][1]}
+			}
+
+			// let midLat = (S + N) / 2
+			// let midLon = (W + E) / 2
+
+			stateDivisions.entities.add({
+				name: `State Electorate of ${toTitleCase(NAME)}`,
+				description: description,
+				polygon: {
+					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
+					height : 0,
+					material : colour,
+					outline : false,
+					outlineColor : Cesium.Color.BLACK,
+				},
+				position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 5000),
+				label: {
+					text: wordWrap(NAME),
+					fillColor: Cesium.Color.BLUE,
+					scaleByDistance: new Cesium.NearFarScalar(50000, 1.25, 5000000, 0.5),
+					translucencyByDistance: new Cesium.NearFarScalar(50000, 0, 100000, 1),
+					depthTestAgainstTerrain: false,
+					// show: false,
+				},
+				boundingBox: {W:W,E:E,S:S,N:N},
+				colour: colour
+			})
+
+			let guid = stateDivisions['_entityCollection']['_entities']['_array'][i]['_id']
+			entGroup = guid//defined at first polygon in the group
+
+			window['currentEntities'][guid] = stateDivisions['_entityCollection']['_entities']['_array'][i]
+
+			stateDivisions['_entityCollection']['_entities']['_array'][i]['entGroup'] = entGroup//add the attribute to the entity
+			guidSelect['stateDivisions'][entGroup] = [guid]//store unique id in an array to loop over
+
+			selections['stateDivisions'][NAME] = [guid]
+
+			thisName = NAME//string for division name
+		}else{
+
+			for(let i in coords){
+				boundary.push(coords[i][0],coords[i][1])
+			}
+
+			stateDivisions.entities.add({
+				name: `Federal Electorate of ${NAME}`,
+				description: description,
+				polygon: {
+					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
+					height: 0,
+					material : colour,
+					outline : false,
+					outlineColor : Cesium.Color.BLACK,
+				},
+				boundingBox: {W:W,E:E,S:S,N:N},
+				colour: colour,
+				entGroup:entGroup//add the entGroup attribute to the entity
+			})
+
+			let guid = stateDivisions['_entityCollection']['_entities']['_array'][i]['_id']
+			window['currentEntities'][guid] = stateDivisions['_entityCollection']['_entities']['_array'][i]
+
+			guidSelect['stateDivisions'][entGroup].push(guid)//store unique id in an array to loop over
+			selections['stateDivisions'][NAME].push(guid)
 		}
-
-		let W = 180;//lower lon
-		let E = -180;//higher lon
-		let S = 90;//lower lat
-		let N = -90;//higher lat
-
-		for(let i in coords){
-			boundary.push(coords[i][0],coords[i][1])
-
-			if(coords[i][0] < W){W = coords[i][0]}
-			if(coords[i][0] > E){E = coords[i][0]}
-			if(coords[i][1] < S){S = coords[i][1]}
-			if(coords[i][1] > N){N = coords[i][1]}
-		}
-
-		let midLat = (S + N) / 2
-		let midLon = (W + E) / 2
-
-		stateDivisions.entities.add({
-			name: `State Electorate of ${toTitleCase(NAME)}`,
-			description: description,
-			polygon: {
-				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
-				height : 0,
-				material : colour,
-				outline : false,
-				outlineColor : Cesium.Color.BLACK,
-			},
-			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 5000),
-			label: {
-				text: wordWrap(NAME),
-				// style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-				// outlineWidth : 2,
-				fillColor: Cesium.Color.BLUE,
-				scaleByDistance: new Cesium.NearFarScalar(50000, 1.25, 5000000, 0.5),
-				translucencyByDistance: new Cesium.NearFarScalar(50000, 0, 100000, 1),
-				depthTestAgainstTerrain: false,
-			},
-			boundingBox: {W:W,E:E,S:S,N:N}
-		})
-
-		let guid = stateDivisions['_entityCollection']['_entities']['_array'][i]['_id']
-		window['currentEntities'][guid] = stateDivisions['_entityCollection']['_entities']['_array'][i]
-		selections['stateDivisions'][NAME] = guid
 	}
 	loadLGAs(state)
 	// console.log(JSON.stringify(repNames))
@@ -977,9 +1316,95 @@ const loadFederal = (state)=>{
 }
 
 const appendFederal = (o,state)=>{
+	$('.areaSelect option[value="federal"]').prop('disabled',o.length <= 0);
 
+	if(o.length <= 0){
+		loadStateDivisions(state)
+		return false;
+	}
+
+	let repNames = {}
 	let thisCol = 0;
 	// console.log(o.length)
+	
+	let thisName = o[0]['properties']['Elect_div'];
+
+	let r = colours[0][0] / 255;
+	let g = colours[0][1] / 255;
+	let b = colours[0][2] / 255;
+	let colour = new Cesium.Color(r,g,b,0.25);
+
+	/*SETUP FOR BOUNDING BOXES - SAVE RESULT TO JSON FILE - CAPTION OUT WHEN NOT IN USE*/
+	let W = 180;//lower lon
+	let E = -180;//higher lon
+	let S = 90;//lower lat
+	let N = -90;//higher lat
+
+	let boxes = {}
+
+	for(let i in o){
+		
+		let Elect_div = o[i]['properties']['Elect_div']
+		let coords = o[i]['geometry']['coordinates'][0]
+
+		if(!repNames[Elect_div]){
+			repNames[Elect_div] = 1
+			boxes[Elect_div] = {}
+			W = 180;
+			E = -180;
+			S = 90;
+			N = -90;
+		}else{
+			repNames[Elect_div] ++
+		}
+
+		for(let i in coords){
+			if(coords[i][0] < W){W = coords[i][0]}
+			if(coords[i][0] > E){E = coords[i][0]}
+			if(coords[i][1] < S){S = coords[i][1]}
+			if(coords[i][1] > N){N = coords[i][1]}
+
+			boxes[Elect_div]['W'] = W
+			boxes[Elect_div]['E'] = E
+			boxes[Elect_div]['S'] = S
+			boxes[Elect_div]['N'] = N
+		}
+	}
+
+	for(let i in o){
+		let Elect_div = o[i]['properties']['Elect_div']
+		o[i]['properties']['boundingBox'] = boxes[Elect_div]
+
+		/******ADDING MP INFO******/
+		let thisNode = o[i]
+		for(let i in mp){
+			if(Elect_div == mp[i][2]){
+				thisNode['properties']['mp'] = mp[i][0]
+				thisNode['properties']['party'] = mp[i][1]
+				thisNode['properties']['tenure'] = mp[i][4]
+				thisNode['properties']['wiki'] = mp[i][5]
+				break;
+			}
+		}
+		/******ADDING MP INFO******/
+	}
+
+	// console.log(o)
+	// console.log(JSON.stringify(o))
+	// return false;
+	/*SETUP FOR BOUNDING BOXES - SAVE RESULT TO JSON FILE - CAPTION OUT WHEN NOT IN USE*/
+
+	let k = Object.keys(repNames)
+	let colourStep = Math.floor(colours.length / k.length);
+
+	// for(let i in k){
+	// 	if(repNames[k[i]] > 1){
+	// 		console.log(k[i],repNames[k[i]])
+	// 	}
+	// }
+
+	let entGroup;
+
 	for(let i in o){
 
 		let E_div_numb = o[i]['properties']['E_div_numb']
@@ -992,6 +1417,14 @@ const appendFederal = (o,state)=>{
 		let Area_SqKm = o[i]['properties']['Area_SqKm']
 		let Sortname = o[i]['properties']['Sortname']
 		let coords = o[i]['geometry']['coordinates'][0]
+
+		let W = o[i]['properties']['boundingBox']['W']
+		let E = o[i]['properties']['boundingBox']['E']
+		let S = o[i]['properties']['boundingBox']['S']
+		let N = o[i]['properties']['boundingBox']['N']
+
+		let midLat = (S + N) / 2
+		let midLon = (W + E) / 2
 		
 		/*************/
 		let mp = o[i]['properties']['mp']
@@ -1006,82 +1439,106 @@ const appendFederal = (o,state)=>{
 		Member:&nbsp;${mp} - ${party}<br>
 		Wiki:&nbsp;<a href="https://en.wikipedia.org/wiki/${wiki}" target="_blank">${Elect_div}</a>
 		`
-		/*************/
-
-		
 		let boundary = []
+		
+		if(thisName !== Elect_div || i == 0){//It's a new division - reset colour
 
-		/************/
-		// let thisNode = o[i]
-		// for(let i in mp){
-		// 	if(Elect_div == mp[i][2]){
-		// 		thisNode['properties']['mp'] = mp[i][0]
-		// 		thisNode['properties']['party'] = mp[i][1]
-		// 		thisNode['properties']['tenure'] = mp[i][4]
-		// 		thisNode['properties']['wiki'] = mp[i][5]
-		// 		break;
-		// 	}
-		// }
-		/************/
+			thisCol += Math.max(colourStep,1);
+			
+			if(thisCol >= colours.length - 1){
+				thisCol = 0;
+			}
 
-		let r = colours[thisCol][0] / 255
-		let g = colours[thisCol][1] / 255
-		let b = colours[thisCol][2] / 255
-		let colour = new Cesium.Color(r,g,b,0.25)
+			r = colours[thisCol][0] / 255
+			g = colours[thisCol][1] / 255
+			b = colours[thisCol][2] / 255
+			colour = new Cesium.Color(r,g,b,0.25);
 
-		let W = 180;//lower lon
-		let E = -180;//higher lon
-		let S = 90;//lower lat
-		let N = -90;//higher lat
+			let W_ = 180;//lower lon
+			let E_ = -180;//higher lon
+			let S_ = 90;//lower lat
+			let N_ = -90;//higher lat
 
-		thisCol++;
-		if(thisCol >= colours.length - 1){
-			thisCol = 0;
+			for(let i in coords){
+				boundary.push(coords[i][0],coords[i][1])
+
+				if(coords[i][0] < W_){W_ = coords[i][0]}
+				if(coords[i][0] > E_){E_ = coords[i][0]}
+				if(coords[i][1] < S_){S_ = coords[i][1]}
+				if(coords[i][1] > N_){N_ = coords[i][1]}
+			}
+
+			// midLat = (S_ + N_) / 2
+			// midLon = (W_ + E_) / 2
+
+			federal.entities.add({
+				name: `Federal Electorate of ${Elect_div}`,
+				description: description,
+				polygon: {
+					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
+					height: 0,
+					material : colour,
+					outline : false,
+					outlineColor : Cesium.Color.BLACK,
+				},
+				position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 5000),
+				label: {
+					text: Elect_div,
+					fillColor: Cesium.Color.BLUE,
+					scaleByDistance: new Cesium.NearFarScalar(50000, 1.25, 5000000, 0.5),
+					translucencyByDistance: new Cesium.NearFarScalar(50000, 0, 100000, 1),
+					depthTestAgainstTerrain: false,
+					// show: false,
+				},
+				boundingBox: {W:W,E:E,S:S,N:N},
+				colour: colour
+			})
+
+			let guid = federal['_entityCollection']['_entities']['_array'][i]['_id']
+			entGroup = guid//defined at first polygon in the group
+
+			window['currentEntities'][guid] = federal['_entityCollection']['_entities']['_array'][i]
+
+			federal['_entityCollection']['_entities']['_array'][i]['entGroup'] = entGroup//add the attribute to the entity
+			guidSelect['federal'][entGroup] = [guid]//store unique id in an array to loop over
+
+			selections['federal'][Elect_div] = [guid]
+
+			thisName = Elect_div;//string for ivision name
+		}else{
+
+			for(let i in coords){
+				boundary.push(coords[i][0],coords[i][1])
+			}
+
+			federal.entities.add({
+				name: `Federal Electorate of ${Elect_div}`,
+				description: description,
+				polygon: {
+					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
+					height: 0,
+					material : colour,
+					outline : false,
+					outlineColor : Cesium.Color.BLACK,
+				},
+				boundingBox: {W:W,E:E,S:S,N:N},
+				colour: colour,
+				entGroup:entGroup//add the entGroup attribute to the entity
+			})
+
+			let guid = federal['_entityCollection']['_entities']['_array'][i]['_id']
+			window['currentEntities'][guid] = federal['_entityCollection']['_entities']['_array'][i]
+
+			guidSelect['federal'][entGroup].push(guid)//store unique id in an array to loop over
+			selections['federal'][Elect_div].push(guid)
 		}
-
-		for(let i in coords){
-			boundary.push(coords[i][0],coords[i][1])
-
-			if(coords[i][0] < W){W = coords[i][0]}
-			if(coords[i][0] > E){E = coords[i][0]}
-			if(coords[i][1] < S){S = coords[i][1]}
-			if(coords[i][1] > N){N = coords[i][1]}
-		}
-
-		let midLat = (S + N) / 2
-		let midLon = (W + E) / 2
-
-		federal.entities.add({
-			name: `Federal Electorate of ${Elect_div}`,
-			description: description,
-			polygon: {
-				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
-				height: 0,
-				material : colour,
-				outline : false,
-				outlineColor : Cesium.Color.BLACK,
-			},
-			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 5000),
-			label: {
-				text: Elect_div,
-				// style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-				// outlineWidth : 2,
-				fillColor: Cesium.Color.BLUE,
-				scaleByDistance: new Cesium.NearFarScalar(50000, 1.25, 5000000, 0.5),
-				translucencyByDistance: new Cesium.NearFarScalar(50000, 0, 100000, 1),
-				depthTestAgainstTerrain: false,
-			},
-			boundingBox: {W:W,E:E,S:S,N:N},
-			colour: colour
-		})
-		let guid = federal['_entityCollection']['_entities']['_array'][i]['_id']
-		window['currentEntities'][guid] = federal['_entityCollection']['_entities']['_array'][i]
-		selections['federal'][Elect_div] = guid
 	}
 	loadStateDivisions(state)
 	// console.log(o)
 	// console.log(JSON.stringify(o))
 	// console.log(viewer.dataSourceDisplay.ready)
+
+	// console.clear()
 }
 
 const loadZones = (state)=>{
@@ -1109,8 +1566,86 @@ const loadZones = (state)=>{
 }
 
 const appendZones = (o,state)=>{
+
+	$('.areaSelect option[value="zones"]').prop('disabled',o.length <= 0);
+	
+	if(o.length <= 0){
+		loadFederal(state)
+		return false;
+	}
+
+	let repNames = {}
+	let thisCol = 0;
 	// console.log(o.length)
+	let entGroup
+	let thisName = o[0]['properties']['id']
+
+	let r = colours[0][0] / 255;
+	let g = colours[0][1] / 255;
+	let b = colours[0][2] / 255;
+	let colour = new Cesium.Color(r,g,b,0.25);
+
+	/*SETUP FOR BOUNDING BOXES - SAVE RESULT TO JSON FILE - CAPTION OUT WHEN NOT IN USE*/
+
+	let W = 180;//lower lon
+	let E = -180;//higher lon
+	let S = 90;//lower lat
+	let N = -90;//higher lat
+
+	let boxes = {}
+
 	for(let i in o){
+		
+		let zoneName = o[i]['properties']['id']
+		let coords = o[i]['geometry']['coordinates'][0]
+
+		if(!repNames[zoneName]){
+			repNames[zoneName] = 1
+			boxes[zoneName] = {}
+			W = 180;
+			E = -180;
+			S = 90;
+			N = -90;
+		}else{
+			repNames[zoneName] ++
+		}
+
+		for(let i in coords){
+			if(coords[i][0] < W){W = coords[i][0]}
+			if(coords[i][0] > E){E = coords[i][0]}
+			if(coords[i][1] < S){S = coords[i][1]}
+			if(coords[i][1] > N){N = coords[i][1]}
+
+			boxes[zoneName]['W'] = W
+			boxes[zoneName]['E'] = E
+			boxes[zoneName]['S'] = S
+			boxes[zoneName]['N'] = N
+		}
+	}
+
+	for(let i in o){
+		let zoneName = o[i]['properties']['id']
+		o[i]['properties']['boundingBox'] = boxes[zoneName]
+	}
+
+	// console.log(o)
+	// console.log(JSON.stringify(o))
+	// return false;
+
+	/*SETUP FOR BOUNDING BOXES - SAVE RESULT TO JSON FILE - CAPTION OUT WHEN NOT IN USE*/
+
+	let k = Object.keys(repNames)
+	let colourStep = Math.floor(colours.length / k.length);
+
+	for(let i in o){
+
+		let W = o[i]['properties']['boundingBox']['W']
+		let E = o[i]['properties']['boundingBox']['E']
+		let S = o[i]['properties']['boundingBox']['S']
+		let N = o[i]['properties']['boundingBox']['N']
+
+		let midLat = (S + N) / 2
+		let midLon = (W + E) / 2
 
 		let zoneName = o[i]['properties']['id']
 		let population = o[i]['properties']['population']
@@ -1133,50 +1668,97 @@ const appendZones = (o,state)=>{
 
 		let coords = o[i]['geometry']['coordinates'][0]
 		let boundary = []
-		//WSEN
-		let W = 180;//lower lon
-		let E = -180;//higher lon
-		let S = 90;//lower lat
-		let N = -90;//higher lat
 
-		for(let i in coords){
-			boundary.push(coords[i][0],coords[i][1])
+		if(thisName !== zoneName || i == 0){//It's a new division - reset colour
 
-			if(coords[i][0] < W){W = coords[i][0]}
-			if(coords[i][0] > E){E = coords[i][0]}
-			if(coords[i][1] < S){S = coords[i][1]}
-			if(coords[i][1] > N){N = coords[i][1]}
-		}
+			thisCol += Math.max(colourStep,1)
 
-		let midLat = (S + N) / 2
-		let midLon = (W + E) / 2
-
-		zones.entities.add({
-			name: zoneName,
-			description: description,
-			polygon: {
-				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
-				height : 0,
-				material : Cesium.Color[colour].withAlpha(0.25),
-				outline : false,
-				outlineColor : Cesium.Color.BLACK,
-			},
-			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 250000),
-			label: {
-				text: zoneName.replace(' - ',`\n`),
-				// style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-				// outlineWidth : 2,
-				fillColor: Cesium.Color.BLUE,
-				scaleByDistance: new Cesium.NearFarScalar(50000, 2, 5000000, 0.5),
-				translucencyByDistance: new Cesium.NearFarScalar(10000, 0, 5000000, 1),
-				depthTestAgainstTerrain: false,
-			},
-			boundingBox: {W:W,E:E,S:S,N:N}
-		})
+			if(thisCol >= colours.length - 1){
+				thisCol = 0;
+			}
+			
+			// r = colours[thisCol][0] / 255
+			// g = colours[thisCol][1] / 255
+			// b = colours[thisCol][2] / 255
+			// colour = new Cesium.Color(r,g,b,0.25)//colours for this lot are manually set in the JSON file
 		
-		let guid = zones['_entityCollection']['_entities']['_array'][i]['_id']
-		window['currentEntities'][guid] = zones['_entityCollection']['_entities']['_array'][i]
-		selections['zones'][zoneName] = guid
+			let W_ = 180;//lower lon
+			let E_ = -180;//higher lon
+			let S_ = 90;//lower lat
+			let N_ = -90;//higher lat
+
+			for(let i in coords){
+				boundary.push(coords[i][0],coords[i][1])
+
+				if(coords[i][0] < W_){W_ = coords[i][0]}
+				if(coords[i][0] > E_){E_ = coords[i][0]}
+				if(coords[i][1] < S_){S_ = coords[i][1]}
+				if(coords[i][1] > N_){N_ = coords[i][1]}
+			}
+
+			// let midLat = (S_ + N_) / 2
+			// let midLon = (W_ + E_) / 2
+
+			zones.entities.add({
+				name: zoneName,
+				description: description,
+				polygon: {
+					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
+					height : 0,
+					material : Cesium.Color[colour].withAlpha(0.25),
+					outline : false,
+					outlineColor : Cesium.Color.BLACK,
+				},
+				position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 250000),
+				label: {
+					text: zoneName.replace(' - ',`\n`),
+					fillColor: Cesium.Color.BLUE,
+					scaleByDistance: new Cesium.NearFarScalar(50000, 2, 5000000, 0.5),
+					translucencyByDistance: new Cesium.NearFarScalar(10000, 0, 5000000, 1),
+					depthTestAgainstTerrain: false,
+					// show: false,
+				},
+				boundingBox: {W:W,E:E,S:S,N:N}
+			})
+			
+			let guid = zones['_entityCollection']['_entities']['_array'][i]['_id']
+			entGroup = guid//defined at first polygon in the group
+
+			window['currentEntities'][guid] = zones['_entityCollection']['_entities']['_array'][i]
+
+			zones['_entityCollection']['_entities']['_array'][i]['entGroup'] = entGroup//add the attribute to the entity
+			guidSelect['zones'][entGroup] = [guid]//store unique id in an array to loop over
+
+			selections['zones'][zoneName] = [guid]
+
+			thisName = zoneName//string for division name
+		}else{
+
+			for(let i in coords){
+				boundary.push(coords[i][0],coords[i][1])
+			}
+
+			zones.entities.add({
+				name: `Federal Electorate of ${zoneName}`,
+				description: description,
+				polygon: {
+					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
+					height: 0,
+					material : colour,
+					outline : false,
+					outlineColor : Cesium.Color.BLACK,
+				},
+				boundingBox: {W:W,E:E,S:S,N:N},
+				colour: colour,
+				entGroup:entGroup//add the entGroup attribute to the entity
+			})
+
+			let guid = zones['_entityCollection']['_entities']['_array'][i]['_id']
+			window['currentEntities'][guid] = zones['_entityCollection']['_entities']['_array'][i]
+
+			guidSelect['zones'][entGroup].push(guid)//store unique id in an array to loop over
+			selections['zones'][zoneName].push(guid)
+		}
 	}
 	loadFederal(state)
 	// console.log(o)
@@ -1208,7 +1790,84 @@ const loadBroadcast = (state)=>{
 
 const appendBroadcast = (o,state)=>{
 	// console.log(o.length)
+	$('.areaSelect option[value="broadcast"]').prop('disabled',o.length <= 0);
+
+	if(o.length <= 0){
+		loadZones(state)
+		return false;
+	}
+
+	let repNames = {}
+	let thisCol = 0;
+	let entGroup;
+	let thisName = o[0]['properties']['id']
+
+	let r = colours[0][0] / 255;
+	let g = colours[0][1] / 255;
+	let b = colours[0][2] / 255;
+	let colour = new Cesium.Color(r,g,b,0.25);
+
+	/*SETUP FOR BOUNDING BOXES - SAVE RESULT TO JSON FILE - CAPTION OUT WHEN NOT IN USE*/
+
+	let W = 180;//lower lon
+	let E = -180;//higher lon
+	let S = 90;//lower lat
+	let N = -90;//higher lat
+
+	let boxes = {}
+
 	for(let i in o){
+		
+		let id = o[i]['properties']['id']
+		let coords = o[i]['geometry']['coordinates'][0]
+
+		if(!repNames[id]){
+			repNames[id] = 1
+			boxes[id] = {}
+			W = 180;
+			E = -180;
+			S = 90;
+			N = -90;
+		}else{
+			repNames[id] ++
+		}
+
+		for(let i in coords){
+			if(coords[i][0] < W){W = coords[i][0]}
+			if(coords[i][0] > E){E = coords[i][0]}
+			if(coords[i][1] < S){S = coords[i][1]}
+			if(coords[i][1] > N){N = coords[i][1]}
+
+			boxes[id]['W'] = W
+			boxes[id]['E'] = E
+			boxes[id]['S'] = S
+			boxes[id]['N'] = N
+		}
+	}
+
+	for(let i in o){
+		let id = o[i]['properties']['id']
+		o[i]['properties']['boundingBox'] = boxes[id]
+	}
+
+	// console.log(o)
+	// console.log(JSON.stringify(o))
+	// return false;
+
+	/*SETUP FOR BOUNDING BOXES - SAVE RESULT TO JSON FILE - CAPTION OUT WHEN NOT IN USE*/
+
+	let k = Object.keys(repNames)
+	let colourStep = Math.floor(colours.length / k.length);
+
+	for(let i in o){
+
+		let W = o[i]['properties']['boundingBox']['W']
+		let E = o[i]['properties']['boundingBox']['E']
+		let S = o[i]['properties']['boundingBox']['S']
+		let N = o[i]['properties']['boundingBox']['N']
+
+		let midLat = (S + N) / 2
+		let midLon = (W + E) / 2
 
 		let id = o[i]['properties']['id']
 		let people = o[i]['properties']['people']
@@ -1232,50 +1891,96 @@ const appendBroadcast = (o,state)=>{
 
 		let coords = o[i]['geometry']['coordinates'][0]
 		let boundary = []
-		//WSEN
-		let W = 180;//lower lon
-		let E = -180;//higher lon
-		let S = 90;//lower lat
-		let N = -90;//higher lat
-
-		for(let i in coords){
-			boundary.push(coords[i][0],coords[i][1])
-
-			if(coords[i][0] < W){W = coords[i][0]}
-			if(coords[i][0] > E){E = coords[i][0]}
-			if(coords[i][1] < S){S = coords[i][1]}
-			if(coords[i][1] > N){N = coords[i][1]}
-		}
-
-		let midLat = (S + N) / 2
-		let midLon = (W + E) / 2
-
-		broadcast.entities.add({
-			name: id,
-			description: description,
-			polygon: {
-				hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
-				height : 0,
-				material : Cesium.Color[colour].withAlpha(0.25),
-				outline : false,
-				outlineColor : Cesium.Color.BLACK,
-			},
-			position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 250000),
-			label: {
-				text: id.replace(' - ',`\n`),
-				// style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-				// outlineWidth : 2,
-				fillColor: Cesium.Color.BLUE,
-				scaleByDistance: new Cesium.NearFarScalar(50000, 2, 5000000, 0.5),
-				translucencyByDistance: new Cesium.NearFarScalar(10000, 0, 5000000, 1),
-				depthTestAgainstTerrain: false,
-			},
-			boundingBox: {W:W,E:E,S:S,N:N}
-		})
 		
-		let guid = broadcast['_entityCollection']['_entities']['_array'][i]['_id']
-		window['currentEntities'][guid] = broadcast['_entityCollection']['_entities']['_array'][i]
-		selections['broadcast'][id] = guid
+		if(thisName !== id || i == 0){//It's a new division - reset colour
+
+			thisCol += Math.max(colourStep,1)
+
+			if(thisCol >= colours.length - 1){
+				thisCol = 0;
+			}
+			
+			// r = colours[thisCol][0] / 255
+			// g = colours[thisCol][1] / 255
+			// b = colours[thisCol][2] / 255
+			// colour = new Cesium.Color(r,g,b,0.25)//colours for this lot are manually set in the JSON file
+
+			let W_ = 180;//lower lon
+			let E_ = -180;//higher lon
+			let S_ = 90;//lower lat
+			let N_ = -90;//higher lat
+
+			for(let i in coords){
+				boundary.push(coords[i][0],coords[i][1])
+
+				if(coords[i][0] < W_){W_ = coords[i][0]}
+				if(coords[i][0] > E_){E_ = coords[i][0]}
+				if(coords[i][1] < S_){S_ = coords[i][1]}
+				if(coords[i][1] > N_){N_ = coords[i][1]}
+			}
+
+			// let midLat = (S_ + N_) / 2
+			// let midLon = (W_ + E_) / 2
+
+			broadcast.entities.add({
+				name: id,
+				description: description,
+				polygon: {
+					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
+					height : 0,
+					material : Cesium.Color[colour].withAlpha(0.25),
+					outline : false,
+					outlineColor : Cesium.Color.BLACK,
+				},
+				position: Cesium.Cartesian3.fromDegrees(midLon, midLat, 250000),
+				label: {
+					text: id.replace(' - ',`\n`),
+					fillColor: Cesium.Color.BLUE,
+					scaleByDistance: new Cesium.NearFarScalar(50000, 2, 5000000, 0.5),
+					translucencyByDistance: new Cesium.NearFarScalar(10000, 0, 5000000, 1),
+					depthTestAgainstTerrain: false,
+				},
+				boundingBox: {W:W,E:E,S:S,N:N}
+			})
+			
+			let guid = broadcast['_entityCollection']['_entities']['_array'][i]['_id']
+			entGroup = guid//defined at first polygon in the group
+		
+			window['currentEntities'][guid] = broadcast['_entityCollection']['_entities']['_array'][i]
+
+			broadcast['_entityCollection']['_entities']['_array'][i]['entGroup'] = entGroup//add the attribute to the entity
+			guidSelect['broadcast'][entGroup] = [guid]//store unique id in an array to loop over
+
+			selections['broadcast'][id] = [guid]
+
+			thisName = id//string for division name
+		}else{
+
+			for(let i in coords){
+				boundary.push(coords[i][0],coords[i][1])
+			}
+
+			broadcast.entities.add({
+				name: `Federal Electorate of ${id}`,
+				description: description,
+				polygon: {
+					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
+					height: 0,
+					material : colour,
+					outline : false,
+					outlineColor : Cesium.Color.BLACK,
+				},
+				boundingBox: {W:W,E:E,S:S,N:N},
+				colour: colour,
+				entGroup:entGroup//add the entGroup attribute to the entity
+			})
+
+			let guid = broadcast['_entityCollection']['_entities']['_array'][i]['_id']
+			window['currentEntities'][guid] = broadcast['_entityCollection']['_entities']['_array'][i]
+
+			guidSelect['broadcast'][entGroup].push(guid)//store unique id in an array to loop over
+			selections['broadcast'][id].push(guid)
+		}
 	}
 	loadZones(state)
 	// console.log(o)
@@ -1292,11 +1997,13 @@ const stateSelect = (e)=>{
 	let b = stateBox[v];
 	
 	window['currentEntities'] = {};
-	
-	localities.entities.removeAll();
+
 	lgas.entities.removeAll();
-	zones.entities.removeAll();
+	stateDivisions.entities.removeAll();
 	federal.entities.removeAll();
+	zones.entities.removeAll();
+	broadcast.entities.removeAll();
+	localities.entities.removeAll();
 
 	selections['lgas'] = {}
 	selections['stateDivisions'] = {}
@@ -1304,6 +2011,13 @@ const stateSelect = (e)=>{
 	selections['zones'] = {}
 	selections['broadcast'] = {}
 	selections['localities'] = {}
+
+	guidSelect['lgas'] = {}
+	guidSelect['stateDivisions'] = {}
+	guidSelect['federal'] = {}
+	guidSelect['zones'] = {}
+	guidSelect['broadcast'] = {}
+	guidSelect['localities'] = {}
 
 	if(v === 'AUS'){
 		e.target.value = 'clear';
@@ -1323,7 +2037,6 @@ const stateSelect = (e)=>{
 	});
 }
 
-
 const areaSelect = (e)=>{
 
 	let v = e.target.value;
@@ -1332,6 +2045,8 @@ const areaSelect = (e)=>{
 	let is_federal = v == 'federal'
 	let is_zones = v == 'zones'
 	let is_broadcast = v == 'broadcast'
+
+	window['selectedArea'] = v;
 	
 	if(v == 'deselect'){
 		e.target.value = 'clear';
@@ -1392,6 +2107,9 @@ const areaFocus = (e)=>{
 			destination : Cesium.Rectangle.fromDegrees(b['W'],b['S'],b['E'],b['N'])
 		});
 	}
+
+	// console.log(window['currentEntities'])
+	// console.log(window['currentEntities'][v])
 }
 
 const viewControl = (e)=>{
@@ -1418,20 +2136,20 @@ $('.cesium-viewer-toolbar').append(`
 	<select class="cesium-button stateSelect" name="state" id="state">
 		<option hidden selected value="clear">State / Territory</option>
 		<option value="AUS" id="clearStateSelection">None</option>
-		<option disabled value="NSW">New South Wales</option>
 		<option value="QLD">Queensland</option>
-		<option disabled value="VIC">Victoria</option>
-		<option disabled value="TAS">Tasmania</option>
-		<option disabled value="SA">South Australia</option>
-		<option disabled value="WA">Western Australia</option>
-		<option disabled value="NT">Northern Territory</option</option>
-		<option disabled value="ACT">ACT</option>
+		<option value="NSW">New South Wales</option>
+		<option value="ACT">ACT</option>
+		<option value="VIC">Victoria</option>
+		<option value="TAS">Tasmania</option>
+		<option value="SA">South Australia</option>
+		<option value="WA">Western Australia</option>
+		<option value="NT">Northern Territory</option</option>
 	</select>
 
 	<select disabled class="cesium-button areaSelect">
 		<option selected hidden value="clear">Division Type</option>
 		<option value="deselect" id="clearDivisionSelection">None</option>
-		<option value="lgas">LGAs</option>
+		<option value="lgas">Local Government Areas</option>
 		<option value="stateDivisions">State Electorates</option>
 		<option value="federal">Federal Electorates</option>
 		<option value="zones">News Coverage Zones</option>
@@ -1453,7 +2171,6 @@ $('.cesium-viewer-toolbar').append(`
 /*BINDINGS*/
 $('.baseSelect').change(baseSelect);
 $('.stateSelect').change(stateSelect);
-// $('.areaSelect').bind('change mouseover mouseout touchstart touchend',areaSelect);
 $('.areaSelect').change(areaSelect);
 $('.viewControl').click(viewControl);
 $('.areaFocus').change(areaFocus)
