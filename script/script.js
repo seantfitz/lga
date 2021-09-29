@@ -411,7 +411,8 @@ const stateBox = {//W,S,E,N
 	SA:[129.001348803946,-38.0625895910114,141.002962544954,-25.996363071308],
 	WA:[112.921124550164,-35.134832521502,129.001862438231,-13.6894781340124],
 	NT:[129.000484929137,-25.9986044823092,138.001207833215,-10.965900135588],
-	ACT:[148.762795689483,-35.920517211112,149.399292549604,-35.1244029421091],
+	// ACT:[148.762795689483,-35.920517211112,149.399292549604,-35.1244029421091],
+	ACT:[148.762795689483,-35.920517211112,150.765777,-35.1178241],
 
 	AUS:[112.921124550164,-43.7429686004967,153.660861,-9.14118954253052]
 }
@@ -694,6 +695,7 @@ const listSelections = (a)=>{
 		`)
 		
 		for(let i in s){
+			// console.log(s[i])
 			$('.areaFocus').append(`<option value="${selections[a][s[i]][0]}">${toTitleCase(s[i])}</option>`)
 		}
 
@@ -807,9 +809,13 @@ const loadLGAs = (state)=>{
 const appendLGAs = (o,state)=>{
 
 	$('.areaSelect option[value="lgas"]').prop('disabled',o.length <= 0);
-	$('.areaSelect option[value="lgas"]').prop('disabled',state != 'QLD');
+	// $('.areaSelect option[value="lgas"]').prop('disabled',state != 'QLD');
 
 	if(o.length <= 0){
+		if($('.areaSelect').val() == 'lgas'){
+			$('.areaSelect').val('clear')
+		}
+		lgas.show = false
 		loadLocalities(state)
 		return false;
 	}
@@ -837,12 +843,12 @@ const appendLGAs = (o,state)=>{
 
 	/*SETUP FOR BOUNDING BOXES - SAVE RESULT TO JSON FILE - CAPTION OUT WHEN NOT IN USE*/
 
-	let W = 180;//lower lon
-	let E = -180;//higher lon
-	let S = 90;//lower lat
-	let N = -90;//higher lat
+	// let W = 180;//lower lon
+	// let E = -180;//higher lon
+	// let S = 90;//lower lat
+	// let N = -90;//higher lat
 
-	let boxes = {}
+	// let boxes = {}
 
 	for(let i in o){
 		
@@ -856,46 +862,46 @@ const appendLGAs = (o,state)=>{
 			LGA_NAME = o[i]['properties']['LGA_NAME']
 		}
 
-		let coords = o[i]['geometry']['coordinates'][0]
+		// let coords = o[i]['geometry']['coordinates'][0]
 
 		if(!repNames[LGA_NAME]){
 			repNames[LGA_NAME] = 1
-			boxes[LGA_NAME] = {}
-			W = 180;
-			E = -180;
-			S = 90;
-			N = -90;
+			// boxes[LGA_NAME] = {}
+			// W = 180;
+			// E = -180;
+			// S = 90;
+			// N = -90;
 		}else{
 			repNames[LGA_NAME] ++
 		}
 
-		for(let i in coords){
-			if(coords[i][0] < W){W = coords[i][0]}
-			if(coords[i][0] > E){E = coords[i][0]}
-			if(coords[i][1] < S){S = coords[i][1]}
-			if(coords[i][1] > N){N = coords[i][1]}
+		// for(let i in coords){
+		// 	if(coords[i][0] < W){W = coords[i][0]}
+		// 	if(coords[i][0] > E){E = coords[i][0]}
+		// 	if(coords[i][1] < S){S = coords[i][1]}
+		// 	if(coords[i][1] > N){N = coords[i][1]}
 
-			boxes[LGA_NAME]['W'] = W
-			boxes[LGA_NAME]['E'] = E
-			boxes[LGA_NAME]['S'] = S
-			boxes[LGA_NAME]['N'] = N
-		}
+		// 	boxes[LGA_NAME]['W'] = W
+		// 	boxes[LGA_NAME]['E'] = E
+		// 	boxes[LGA_NAME]['S'] = S
+		// 	boxes[LGA_NAME]['N'] = N
+		// }
 	}
 
-	for(let i in o){
+	// for(let i in o){
 		
-		let LGA_NAME
+	// 	let LGA_NAME
 
-		if(o[i]['properties']['NSW_LGA__2']){
-			LGA_NAME = o[i]['properties']['NSW_LGA__2']
-		}else if(o[i]['properties']['QLD_LGA__2']){
-			LGA_NAME = o[i]['properties']['QLD_LGA__2']
-		}else{
-			LGA_NAME = o[i]['properties']['LGA_NAME']
-		}
+	// 	if(o[i]['properties']['NSW_LGA__2']){
+	// 		LGA_NAME = o[i]['properties']['NSW_LGA__2']
+	// 	}else if(o[i]['properties']['QLD_LGA__2']){
+	// 		LGA_NAME = o[i]['properties']['QLD_LGA__2']
+	// 	}else{
+	// 		LGA_NAME = o[i]['properties']['LGA_NAME']
+	// 	}
 
-		o[i]['properties']['boundingBox'] = boxes[LGA_NAME]
-	}
+	// 	o[i]['properties']['boundingBox'] = boxes[LGA_NAME]
+	// }
 
 	// console.log(o)
 	// console.log(JSON.stringify(o))
@@ -1048,7 +1054,6 @@ const appendLGAs = (o,state)=>{
 	// console.log(JSON.stringify(o))
 }
 
-/***/
 const loadStateDivisions = (state)=>{
 	let propName = `stateDivisions_${state}`
 	if(typeof(window[propName]) !== 'object'){
@@ -1076,8 +1081,11 @@ const loadStateDivisions = (state)=>{
 const appendStateDivisions = (o,state)=>{
 
 	$('.areaSelect option[value="stateDivisions"]').prop('disabled',o.length <= 0);
-
 	if(o.length <= 0){
+		if($('.areaSelect').val() == 'stateDivisions'){
+			$('.areaSelect').val('clear')
+		}
+		stateDivisions.show = false
 		loadLGAs(state)
 		return false;
 	}
@@ -1289,7 +1297,6 @@ const appendStateDivisions = (o,state)=>{
 	// console.log(JSON.stringify(o))
 	// console.log(o)
 }
-/***/
 
 const loadFederal = (state)=>{
 	let propName = `federal_${state}`
@@ -1316,9 +1323,13 @@ const loadFederal = (state)=>{
 }
 
 const appendFederal = (o,state)=>{
-	$('.areaSelect option[value="federal"]').prop('disabled',o.length <= 0);
 
+	$('.areaSelect option[value="federal"]').prop('disabled',o.length <= 0);
 	if(o.length <= 0){
+		if($('.areaSelect').val() == 'federal'){
+			$('.areaSelect').val('clear')
+		}
+		federal.show = false
 		loadStateDivisions(state)
 		return false;
 	}
@@ -1334,65 +1345,16 @@ const appendFederal = (o,state)=>{
 	let b = colours[0][2] / 255;
 	let colour = new Cesium.Color(r,g,b,0.25);
 
-	/*SETUP FOR BOUNDING BOXES - SAVE RESULT TO JSON FILE - CAPTION OUT WHEN NOT IN USE*/
-	let W = 180;//lower lon
-	let E = -180;//higher lon
-	let S = 90;//lower lat
-	let N = -90;//higher lat
-
-	let boxes = {}
-
 	for(let i in o){
 		
 		let Elect_div = o[i]['properties']['Elect_div']
-		let coords = o[i]['geometry']['coordinates'][0]
-
+	
 		if(!repNames[Elect_div]){
 			repNames[Elect_div] = 1
-			boxes[Elect_div] = {}
-			W = 180;
-			E = -180;
-			S = 90;
-			N = -90;
 		}else{
 			repNames[Elect_div] ++
 		}
-
-		for(let i in coords){
-			if(coords[i][0] < W){W = coords[i][0]}
-			if(coords[i][0] > E){E = coords[i][0]}
-			if(coords[i][1] < S){S = coords[i][1]}
-			if(coords[i][1] > N){N = coords[i][1]}
-
-			boxes[Elect_div]['W'] = W
-			boxes[Elect_div]['E'] = E
-			boxes[Elect_div]['S'] = S
-			boxes[Elect_div]['N'] = N
-		}
 	}
-
-	for(let i in o){
-		let Elect_div = o[i]['properties']['Elect_div']
-		o[i]['properties']['boundingBox'] = boxes[Elect_div]
-
-		/******ADDING MP INFO******/
-		let thisNode = o[i]
-		for(let i in mp){
-			if(Elect_div == mp[i][2]){
-				thisNode['properties']['mp'] = mp[i][0]
-				thisNode['properties']['party'] = mp[i][1]
-				thisNode['properties']['tenure'] = mp[i][4]
-				thisNode['properties']['wiki'] = mp[i][5]
-				break;
-			}
-		}
-		/******ADDING MP INFO******/
-	}
-
-	// console.log(o)
-	// console.log(JSON.stringify(o))
-	// return false;
-	/*SETUP FOR BOUNDING BOXES - SAVE RESULT TO JSON FILE - CAPTION OUT WHEN NOT IN USE*/
 
 	let k = Object.keys(repNames)
 	let colourStep = Math.floor(colours.length / k.length);
@@ -1434,7 +1396,6 @@ const appendFederal = (o,state)=>{
 
 		let description = `
 		<!--Actual:&nbsp;${Actual}<br>-->
-		<!--Area:&nbsp;${decimalise(Area_SqKm,2)}&nbsp;km<sup>2</sup><br>-->
 		Area:&nbsp;${decimalise(Area_SqKm,0)}&nbsp;km<sup>2</sup><br>
 		Member:&nbsp;${mp} - ${party}<br>
 		Wiki:&nbsp;<a href="https://en.wikipedia.org/wiki/${wiki}" target="_blank">${Elect_div}</a>
@@ -1454,18 +1415,43 @@ const appendFederal = (o,state)=>{
 			b = colours[thisCol][2] / 255
 			colour = new Cesium.Color(r,g,b,0.25);
 
-			let W_ = 180;//lower lon
-			let E_ = -180;//higher lon
-			let S_ = 90;//lower lat
-			let N_ = -90;//higher lat
+			// let W_ = 180;//lower lon
+			// let E_ = -180;//higher lon
+			// let S_ = 90;//lower lat
+			// let N_ = -90;//higher lat
 
 			for(let i in coords){
 				boundary.push(coords[i][0],coords[i][1])
 
-				if(coords[i][0] < W_){W_ = coords[i][0]}
-				if(coords[i][0] > E_){E_ = coords[i][0]}
-				if(coords[i][1] < S_){S_ = coords[i][1]}
-				if(coords[i][1] > N_){N_ = coords[i][1]}
+			// 	if(coords[i][0] < W_){W_ = coords[i][0]}
+			// 	if(coords[i][0] > E_){E_ = coords[i][0]}
+			// 	if(coords[i][1] < S_){S_ = coords[i][1]}
+			// 	if(coords[i][1] > N_){N_ = coords[i][1]}
+			}
+
+			if(Sortname == 'Fenner'){
+				
+				W = 180;
+				E = -180;
+				S = 90;
+				N = -90;
+
+				for(let i in coords){
+					if(coords[i][0] < W){W = coords[i][0]}
+					if(coords[i][0] > E){E = coords[i][0]}
+					if(coords[i][1] < S){S = coords[i][1]}
+					if(coords[i][1] > N){N = coords[i][1]}
+				}
+
+				midLat = (S + N) / 2
+				midLon = (W + E) / 2
+
+				description = `
+				<!--Actual:&nbsp;${Actual}<br>-->
+				Area:&nbsp;${decimalise(Area_SqKm,0)}&nbsp;km<sup>2</sup>&nbsp;(total)<br>
+				Member:&nbsp;${mp} - ${party}<br>
+				Wiki:&nbsp;<a href="https://en.wikipedia.org/wiki/${wiki}" target="_blank">${Elect_div}</a>
+				`
 			}
 
 			// midLat = (S_ + N_) / 2
@@ -1568,8 +1554,11 @@ const loadZones = (state)=>{
 const appendZones = (o,state)=>{
 
 	$('.areaSelect option[value="zones"]').prop('disabled',o.length <= 0);
-	
 	if(o.length <= 0){
+		if($('.areaSelect').val() == 'zones'){
+			$('.areaSelect').val('clear')	
+		}
+		zones.show = false
 		loadFederal(state)
 		return false;
 	}
@@ -1791,8 +1780,11 @@ const loadBroadcast = (state)=>{
 const appendBroadcast = (o,state)=>{
 	// console.log(o.length)
 	$('.areaSelect option[value="broadcast"]').prop('disabled',o.length <= 0);
-
 	if(o.length <= 0){
+		if($('.areaSelect').val() == 'broadcast'){
+			$('.areaSelect').val('clear')	
+		}
+		broadcast.show = false
 		loadZones(state)
 		return false;
 	}
