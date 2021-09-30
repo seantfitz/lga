@@ -411,8 +411,8 @@ const stateBox = {//W,S,E,N
 	SA:[129.001348803946,-38.0625895910114,141.002962544954,-25.996363071308],
 	WA:[112.921124550164,-35.134832521502,129.001862438231,-13.6894781340124],
 	NT:[129.000484929137,-25.9986044823092,138.001207833215,-10.965900135588],
-	// ACT:[148.762795689483,-35.920517211112,149.399292549604,-35.1244029421091],
-	ACT:[148.762795689483,-35.920517211112,150.765777,-35.1178241],
+	ACT:[148.762795689483,-35.920517211112,149.399292549604,-35.1244029421091],
+	// ACT:[148.762795689483,-35.920517211112,150.765777,-35.1178241],//including jervis bay territory
 
 	AUS:[112.921124550164,-43.7429686004967,153.660861,-9.14118954253052]
 }
@@ -601,7 +601,7 @@ const toTitleCase = (str)=>{
 		/\w\S*/g,
 		(txt)=>{
 			// return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-			return (txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()).replace(/Mcc/g,'McC');
+			return (txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()).replace(/Mcc/g,'McC').replace(/O'c/,`O'C`);
 		}
 	);
 }
@@ -1175,6 +1175,7 @@ const appendStateDivisions = (o,state)=>{
 		let midLon = (W + E) / 2
 
 		let NAME = o[i]['properties']['NAME']
+		// let NAME = o[i]['properties']['SA_STATE_2']
 		let mp = o[i]['properties']['mp']
 		let party = o[i]['properties']['party']
 		let namesake = o[i]['properties']['namesake']
@@ -1182,13 +1183,17 @@ const appendStateDivisions = (o,state)=>{
 		let Area_SqKm = o[i]['properties']['Area_SqKm']
 		let wiki = o[i]['properties']['wiki']
 
-		let description = `
-		Area:&nbsp;${decimalise(Area_SqKm,2)}&nbsp;km<sup>2</sup><br>
-		Member:&nbsp;${mp} - ${party}<br>
-		<!--Electors:&nbsp;${electors}<br>-->
-		<!--Namesake:&nbsp;${namesake}<br>-->
-		Wiki:&nbsp;<a href="https://en.wikipedia.org/wiki/${wiki}" target="_blank">${toTitleCase(NAME)}</a>
-		`
+		let description 
+		
+		if(state == 'QLD'){
+			description = `
+			Area:&nbsp;${decimalise(Area_SqKm,2)}&nbsp;km<sup>2</sup><br>
+			Member:&nbsp;${mp} - ${party}<br>
+			<!--Electors:&nbsp;${electors}<br>-->
+			<!--Namesake:&nbsp;${namesake}<br>-->
+			Wiki:&nbsp;<a href="https://en.wikipedia.org/wiki/${wiki}" target="_blank">${toTitleCase(NAME)}</a>
+			`
+		}
 		/***/
 
 		let coords = o[i]['geometry']['coordinates'][0]
@@ -1225,7 +1230,8 @@ const appendStateDivisions = (o,state)=>{
 			// let midLon = (W + E) / 2
 
 			stateDivisions.entities.add({
-				name: `State Electorate of ${toTitleCase(NAME)}`,
+				// name: `State Electorate of ${toTitleCase(NAME)}`,
+				name: NAME,
 				description: description,
 				polygon: {
 					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
@@ -1265,7 +1271,7 @@ const appendStateDivisions = (o,state)=>{
 			}
 
 			stateDivisions.entities.add({
-				name: `Federal Electorate of ${NAME}`,
+				name: NAME,
 				description: description,
 				polygon: {
 					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
@@ -1458,7 +1464,8 @@ const appendFederal = (o,state)=>{
 			// midLon = (W_ + E_) / 2
 
 			federal.entities.add({
-				name: `Federal Electorate of ${Elect_div}`,
+				// name: `Federal Electorate of ${Elect_div}`,
+				name: Elect_div,
 				description: description,
 				polygon: {
 					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
@@ -1498,7 +1505,8 @@ const appendFederal = (o,state)=>{
 			}
 
 			federal.entities.add({
-				name: `Federal Electorate of ${Elect_div}`,
+				// name: `Federal Electorate of ${Elect_div}`,
+				name: Elect_div,
 				description: description,
 				polygon: {
 					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
@@ -1728,7 +1736,7 @@ const appendZones = (o,state)=>{
 			}
 
 			zones.entities.add({
-				name: `Federal Electorate of ${zoneName}`,
+				name: zoneName,
 				description: description,
 				polygon: {
 					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
@@ -1953,7 +1961,7 @@ const appendBroadcast = (o,state)=>{
 			}
 
 			broadcast.entities.add({
-				name: `Federal Electorate of ${id}`,
+				name: id,
 				description: description,
 				polygon: {
 					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
