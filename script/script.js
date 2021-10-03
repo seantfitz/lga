@@ -373,6 +373,7 @@ const viewer = new Cesium.Viewer('cesiumContainer', {
 	// mapMode2D: Cesium.MapMode2D.ROTATE,
 });
 
+let stateBoundaries = new Cesium.CustomDataSource("stateBoundaries")
 let localities = new Cesium.CustomDataSource("localities")
 let lgas = new Cesium.CustomDataSource("lgas")
 let stateDivisions = new Cesium.CustomDataSource("stateDivisions")
@@ -380,6 +381,7 @@ let federal = new Cesium.CustomDataSource("federal")
 let zones = new Cesium.CustomDataSource("zones")
 let broadcast = new Cesium.CustomDataSource("broadcast")
 
+viewer.dataSources.add(stateBoundaries);
 viewer.dataSources.add(localities);
 viewer.dataSources.add(lgas);
 viewer.dataSources.add(stateDivisions);
@@ -417,7 +419,19 @@ const stateBox = {//W,S,E,N
 	AUS:[112.921124550164,-43.7429686004967,153.660861,-9.14118954253052]
 }
 
+const stateColours = {
+	NSW:[0,170,255],
+	QLD:[150,50,100],
+	VIC:[45,45,50],
+	TAS:[0,140,75],
+	SA:[255,0,0],
+	WA:[220,160,0],
+	NT:[255,100,0],
+	ACT:[255,200,0]
+}
+
 let selections = {
+	stateBoundaries:{},
 	clear:{},
 	lgas:{},
 	stateDivisions:{},
@@ -427,6 +441,7 @@ let selections = {
 	localities:{},
 }
 let guidSelect = {
+	stateBoundaries:{},
 	clear:{},
 	lgas:{},
 	stateDivisions:{},
@@ -560,6 +575,24 @@ viewer.selectedEntityChanged.addEventListener((e)=>{
 		let entGroup = guidSelect[owner][e['entGroup']]
 		
 		switch(owner){
+
+			case 'stateBoundaries':
+
+			let prevVal = $('.stateSelect').val()
+
+			if($('.stateSelect').val() != name){
+				$('.stateSelect').val(name);
+			}
+			
+			viewer.selectedEntity = undefined;
+			viewer.trackedEntity = undefined;
+			
+			if(prevVal != name){
+				stateSelect(name)
+			}
+
+			break;
+
 			case 'lgas':
 			case 'stateDivisions':
 			case 'federal':
@@ -1894,33 +1927,9 @@ const appendBroadcast = (o,state)=>{
 		
 		if(thisName !== id || i == 0){//It's a new division - reset colour
 
-			thisCol += Math.max(colourStep,1)
-
-			if(thisCol >= colours.length - 1){
-				thisCol = 0;
-			}
-			
-			// r = colours[thisCol][0] / 255
-			// g = colours[thisCol][1] / 255
-			// b = colours[thisCol][2] / 255
-			// colour = new Cesium.Color(r,g,b,0.25)//colours for this lot are manually set in the JSON file
-
-			let W_ = 180;//lower lon
-			let E_ = -180;//higher lon
-			let S_ = 90;//lower lat
-			let N_ = -90;//higher lat
-
 			for(let i in coords){
 				boundary.push(coords[i][0],coords[i][1])
-
-				if(coords[i][0] < W_){W_ = coords[i][0]}
-				if(coords[i][0] > E_){E_ = coords[i][0]}
-				if(coords[i][1] < S_){S_ = coords[i][1]}
-				if(coords[i][1] > N_){N_ = coords[i][1]}
 			}
-
-			// let midLat = (S_ + N_) / 2
-			// let midLon = (W_ + E_) / 2
 
 			broadcast.entities.add({
 				name: id,
@@ -1966,7 +1975,7 @@ const appendBroadcast = (o,state)=>{
 				polygon: {
 					hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
 					height: 0,
-					material : colour,
+					material : Cesium.Color[colour].withAlpha(0.25),
 					outline : false,
 					outlineColor : Cesium.Color.BLACK,
 				},
@@ -1985,6 +1994,77 @@ const appendBroadcast = (o,state)=>{
 	loadZones(state)
 	// console.log(o)
 }
+
+const loadStates = ()=>{
+	
+	let info = fetch(`script/stateboundaries/stateboundaries.json`,{
+		method: 'get',
+		headers: {'Content-Type': 'application/json'}
+	})
+	.then((response) => response.json())
+	.then((response) => {
+		
+		let entGroup
+		let o = response['features'];
+		let thisName = o[0]['properties']['ST_ABBREV']
+
+		for(let i in o){
+
+			let id = o[i]['properties']['ST_ABBREV']
+			let coords = o[i]['geometry']['coordinates'][0]
+			let boundary = []
+
+			let r = stateColours[id][0] / 255;
+			let g = stateColours[id][1] / 255;
+			let b = stateColours[id][2] / 255;
+
+			let colour = new Cesium.Color(r,g,b,0.5);
+
+			for(let i in coords){
+				boundary.push(coords[i][0],coords[i][1])
+			}
+
+			if(thisName !== id || i == 0){
+
+				stateBoundaries.entities.add({
+					name: id,
+					polygon: {
+						hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
+						height : 0,
+						material : colour,
+						outline : false,
+						outlineColor : Cesium.Color.BLACK,
+					}
+				})
+
+				let guid = stateBoundaries['_entityCollection']['_entities']['_array'][i]['_id']
+				entGroup = guid//defined at first polygon in the group
+
+				// window['currentEntities'][guid] = stateBoundaries['_entityCollection']['_entities']['_array'][i]
+
+				// guidSelect['stateBoundaries'][entGroup].push(guid)//store unique id in an array to loop over
+				// selections['stateBoundaries'][id].push(guid)
+
+				thisName = id;
+			}else{
+
+				stateBoundaries.entities.add({
+					name: id,
+					polygon: {
+						hierarchy: Cesium.Cartesian3.fromDegreesArray(boundary),
+						height : 0,
+						material : colour,
+						outline : false,
+						outlineColor : Cesium.Color.BLACK,
+						entGroup:entGroup//add the entGroup attribute to the entity
+					}
+				})
+			}
+		}
+	})
+	.catch(err => console.error('Caught error: ', err))
+}
+loadStates();
 /*ENTITY FUNCTIONS*/
 
 const baseSelect = (e)=>{
@@ -1993,7 +2073,13 @@ const baseSelect = (e)=>{
 
 const stateSelect = (e)=>{
 	
-	let v = e.target.value;
+	let v;
+	if(e.type == 'change'){
+		v = e.target.value;
+	}else{
+		v = e;
+	}
+
 	let b = stateBox[v];
 	
 	window['currentEntities'] = {};
@@ -2025,6 +2111,7 @@ const stateSelect = (e)=>{
 		$('.areaSelect').prop('disabled',true);
 		$('.areaFocus').prop('disabled',true).val('clear');//
 		// $('option[value="AUS"]').prop('disabled',true);
+		stateBoundaries.show = true;
 	}else{
 		// loadZones(v);
 		loadBroadcast(v);
@@ -2051,8 +2138,10 @@ const areaSelect = (e)=>{
 	if(v == 'deselect'){
 		e.target.value = 'clear';
 		$('#clearDivisionSelection').html('None')
+		stateBoundaries.show = true;
 	}else{
 		$('#clearDivisionSelection').html('Clear Selection')
+		stateBoundaries.show = false;
 	}
 		
 	lgas.show = is_lgas;
